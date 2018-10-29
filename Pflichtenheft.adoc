@@ -23,6 +23,13 @@ Die Aufgaben der Software lassen sich in 3 Bereiche unterteilen:
 ** gekennzeichnete Bilder sollen vom NN zum weiteren Training verwendet werden.
 ** sie müssen zurück ins Dateisystem oder in eine Datenbank eingefügt werden
 
+=== Nutzeridentifizierung
+Zusätzlich muss jeder Nutzer einen eigenen Zugang haben. Die Bilder sollen verschiedenen Personen präsentiert werden, um Fehler zu verringern.
+
+=== GUI
+image::GUI1.jpg[User Interface, 300, 400]
+_User Interface zur Präsentation der Bilder_
+
 == Literatur
 
 
