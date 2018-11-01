@@ -5,48 +5,65 @@ Komplexpraktikum Computer- und robotergestützte Chirurgie
 
 == Fragestellung
 
-Ein neuronales Netzwerk(NN) wertet aus, welche chirurgischen Instrumente in einem Bild erkennbar sind. Das NN liefert bei einigen Bildern unzuverlässige Ergebnisse. Um das NN zu trainieren, sollen solche problematischen Bilder mit Informationen über enthaltene Intrumente gekennzeichnet werden.
+Ein neuronales Netz für die Analyse von Bilddaten auf verschiedene chirurgische Instrumente existiert
+bereits. Auch ein gelabelter Datensatz zum Training existiert bereits.
+Um die Genauigkeit der Vorhersagen zu erhöhen, sollen die Bilder mit einer hohen Varianz Experten
+über ein Webinterface präsentiert werden. Dort können dann Vorhersagen bestätigt beziehungsweise
+korrigiert werden. Die entsprechenden Nutzereingaben sollen dann wieder an das neuronale Netz als
+Trainingsdaten überführt werden, um die Genauigkeit weiterer Vorhersagen zu erhöhen.
 
-Gefragt ist eine Plattform, auf der Fachkundige auf komfortable Weise automatisch ausgewählte Bilder kennzeichnen.
 
-== Ziele
+== Pflichtziele
 
 Die Aufgaben der Software lassen sich in 3 Bereiche unterteilen:
 
 * *Auswahl/sortieren* der für das NN problematischen Bilder
-** als _problematisch_ gelten Bilder, bei denen die Wahrscheinlichkeiten für die Instrumente eine Varianz über einem bestimmten Schwellwert besitzen.
-** die Bilder sollen nach Varianz sortiert und der Reihe nach dem Anwender präsentiert werden.
+** als _problematisch_ gelten Bilder, bei denen die Wahrscheinlichkeiten für die Instrumente eine Varianz
+über einem bestimmten Schwellwert besitzen.
+** die Bilder sollen nach Varianz sortiert und der Reihe nach dem Anwender präsentiert werden
+(Bilder mit hoher Varianz zuerst).
 
-* *Präsentation* der Bilder im User Interface. Bestätigung/Anpassung der gefundenen Instrumente durch eine fachkundige Person
+* *Präsentation* der Bilder im User Interface. Bestätigung/Anpassung der gefundenen Instrumente durch Experten
 
 * *Verarbeitung/Bereitstellung* der gesammelten Daten für weiteres Training des NN
 ** gekennzeichnete Bilder sollen vom NN zum weiteren Training verwendet werden.
 ** sie müssen zurück ins Dateisystem oder in eine Datenbank eingefügt werden
 
-=== Nutzeridentifizierung
-Zusätzlich muss jeder Nutzer einen eigenen Zugang haben. Die Bilder sollen verschiedenen Personen präsentiert werden, um Fehler zu verringern.
+Erneute Ausführung des Machine Learning Algorithmus auf dem erweiterten/modifizierten Datensatz.
+
+Außerdem soll das Projekt während der Entwicklung dokumentiert werden.
+
+== Kannziele
+
+* Präsentation einer zu dem einzelnen Frame gehörigen Videosequenz
+* persönlicher Zugang für verschiedene Nutzer
+* Bewertung des selben Bildes durch mehrere Experten und Nutzung der Mehrheitsmeinung für ML
+* Webinterface auch für mobile Endgeräte anpassen
 
 === GUI
 image::GUI1.jpg[User Interface, 300, 400]
 _User Interface zur Präsentation der Bilder_
 
-== Literatur
-
-
 == Arbeitspakete (jeweils mit geplanter Bearbeitungszeit)
-AP1:
+
+AP1:  Erstellung eines Userinterfaces auf HTML Basis (3 Wochen)
 
 
-AP2:
+AP2:  Einarbeitung in den bestehenden ML Algorithmus (3 Wochen)
 
 
-AP3:
-
-…
-APx:
+AP3:  Definition entsprechender Schnittstellen zwischen Front- und Backend (1 Woche)
 
 
-AP Evaluation:
+AP4:  Implementierung des Backends ( 4 Wochen)
+
+AP5:  Umsetzung des Webinterfaces an die entsprechenden Ein-/Ausgaben mit Backend (4 Wochen)
+
+AP6:  Aufsetzen des Projekts auf entsprechenden Server (1 Woche)
+
+AP7:  Testen des laufenden Systems (2 Wochen)
+
+AP Evaluation:  Test des Systems durch einen/mehrere Nutzer aus der künftigen Nutzergruppe (1 Woche)
 
 
 == Sonstiges
