@@ -1,3 +1,8 @@
 from django.contrib import admin
 
-# Register your models here.
+from .models import Image, Label, Probability, Userlabels
+
+admin.site.register(Image)
+admin.site.register(Label)
+admin.site.register(Probability)
+admin.site.register(Userlabels)
