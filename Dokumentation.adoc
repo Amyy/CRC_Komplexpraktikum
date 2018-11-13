@@ -33,15 +33,15 @@ Die Wahrscheinlichkeit für ein Instrument in einem Bild
 
 === GUI
 
-.nächstes Bild holen
+nächstes Bild holen
 [source,python]
 Image.objects.next_image()
 
-.Labels eines Bildes holen
+Labels eines Bildes holen
 [source,python]
-TODO
+Probability.objects.get_image_labels(image)
 
-.Labels eines Bildes setzen
+Labels eines Bildes setzen
 [source,python]
 Userlabels.objects.set_userlabels(image, user, label_set)
 
