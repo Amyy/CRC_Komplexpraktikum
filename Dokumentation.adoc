@@ -1,0 +1,34 @@
+= Dokumentation
+
+== Modell
+
+=== Image
+Metadaten eines Bildes
+
+* name: Dateiname
+* variance: Varianz der Wahrscheinlichkeiten des NN
+* data: Pfad zum Bild
+* count_userlabels: Anzahl der User, die dieses Bild bereits gelabeled haben
+
+=== Label
+Alle Instrumente, die gelabeled werden können
+
+* name: Name des Instruments
+
+=== Userlabels
+Vom User gesetzte Labels eines Bildes
+
+* image: Bild
+* author: User, der das Bild gelabeled hat
+* label: Instrumente, die im Bild vorhanden sind
+
+=== Probability
+Die Wahrscheinlichkeit für ein Instrument in einem Bild
+
+* image: Bild
+* label: Instrument
+* value: Wahrshceinlichkeit (zwischen 0 und 1)
+
+== Datenbankinterfaces
+
+=== GUI
