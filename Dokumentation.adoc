@@ -27,8 +27,22 @@ Die Wahrscheinlichkeit für ein Instrument in einem Bild
 
 * image: Bild
 * label: Instrument
-* value: Wahrshceinlichkeit (zwischen 0 und 1)
+* value: Wahrscheinlichkeit (zwischen 0 und 1)
 
 == Datenbankinterfaces
 
 === GUI
+
+.nächstes Bild holen
+[source,python]
+Image.objects.next_image()
+
+.Labels eines Bildes holen
+[source,python]
+TODO
+
+.Labels eines Bildes setzen
+[source,python]
+Userlabels.objects.set_userlabels(image, user, label_set)
+
+=== NN Manager
