@@ -2,3 +2,13 @@ active-learning-interface/.idea/workspace.xml
 */.idea/*
 
 gui/django/\.idea/
+
+active-learning-interface/mysite/mysite/__pycache__/
+
+active-learning-interface/mysite/\.idea/
+
+gui/django/crc/\.idea/
+
+gui/django/crc/crc/__pycache__/
+
+gui/django/crc/prototype/__pycache__/
