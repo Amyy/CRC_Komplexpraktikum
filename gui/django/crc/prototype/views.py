@@ -6,11 +6,10 @@ from django.template import Context, loader
 
 
 def index(request):
-    #return HttpResponse('main.html')
-    #template = loader.get_template('main.html')
-    #return HttpResponse(template)
-    #template = loader.get_template("proto/main.html")
-    #return HttpResponse(template.render())
     return render(request, 'proto/main.html')
 
-   # return HttpResponse("Hello World")
+def password(request):
+    return render(request, 'proto/changePassword.html')
+
+def login(request):
+    return render(request, 'proto/login.html')
