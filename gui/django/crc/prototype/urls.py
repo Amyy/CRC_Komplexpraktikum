@@ -5,7 +5,7 @@ from . import views
 urlpatterns = [
     # get the main page
     # accessed via http://localhost:8000/prototype/main
-    path('main', views.index, name='index'),
+    path('main', views.index, name='main'),
     # login page -> accessed via http://localhost:8000/prototype/
     path('', views.login, name='login'),
     # change password
