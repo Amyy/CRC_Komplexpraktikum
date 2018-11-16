@@ -93,13 +93,14 @@ def calculate_accuracy(prediction,label):
 ################################################################################
 preload_images = False # load images to RAM once? else load from SSD every Epoche
 trial_name = "Baseline_10_lr6"
-output_path = "/media/data/jenkealex/PrecPred/PseudoAcitveLabeling_v2/"
+output_path = "/local_home/wagnerame/Komplexpraktikum/network_output"
 data_path  = "/local_home/bodenstse/cholec80_1fps/frames/"
 
 epochs = 100
 num_conf_cycles = 0
 
-batch_size = 128
+#batch_size = 128
+batch_size = 1
 width = 384
 height = 216
 num_classes = 7

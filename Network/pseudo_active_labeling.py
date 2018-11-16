@@ -63,7 +63,7 @@ import losses
 ################################################################################
 preload_images = False  # load images to RAM once? else load from SSD every epoch
 trial_name = "Ins_AlexNet"
-output_path = "/media/data/jenkealex/PrecPred/PseudoAcitveLabeling_v2/"
+output_path = "/local_home/wagnerame/Komplexpraktikum/pseudo_active_labeling"
 data_path = "/local_home/bodenstse/cholec80_1fps/frames/"
 
 rounds = 10
