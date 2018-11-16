@@ -5,18 +5,13 @@ import numpy
 
 
 class gui_image_manager(models.Manager):
-    def set_labels(self, image, label_set = []):
+    def set_userlabels(self, image, label_set = []):
         image.label_set.set(label_set)
         image.save()
-#        image.label_set.clear()
-#        for label in label_set:
-#            image.label_set.add(label)
+
 
     def next_image(self):
-        return self.order_by('variance').first()
-
-    def get_labels(self, image):
-        return image.label_set.all()
+        return self.order_by('variance', '-count_userlabels').first()
 
 
 class gui_probability_manager(models.Manager):
@@ -30,15 +25,39 @@ class gui_probability_manager(models.Manager):
         image.variance = variance
         image.save()
 
+    def get_image_labels(self, image):
+        im_prob = self.filter(image=image)
+
+        thr_labels = []
+        for prob in im_prob:
+            if prob.value > Probability.THRESHOLD:
+                thr_labels.append(prob.label)
+        return thr_labels
+
+
+
+class gui_userlabels_mangager(models.Manager):
+    def set_userlabels(self, image, user, label_set = []):
+        userlabels = Userlabels(image = image, author = user)
+        userlabels.save()
+        for label in label_set:
+            userlabels.label.add(label)
+        userlabels.save()
+        image.count_userlabels = self.countLabels(image)
+        image.save()
+
+
+    def countLabels(self, image):
+        return self.filter(image=image).count()
 
 
 class Image(models.Model):
     name = models.CharField(max_length=200)
     variance = models.FloatField()
     data = models.ImageField()
+    count_userlabels = models.IntegerField()
 
-    objects = models.Manager()
-    gui = gui_image_manager()
+    objects = gui_image_manager()
 
     def __str__(self):
         return self.name
@@ -60,15 +79,20 @@ class Userlabels(models.Model):
         toString = 'Picture {} by {}'.format(self.image, self.author)
         return toString
 
+    objects = gui_userlabels_mangager()
+
+
 
 class Probability(models.Model):
+    THRESHOLD = 0.5
     image = models.ForeignKey(Image, on_delete=models.CASCADE)
     label = models.ForeignKey(Label, on_delete=models.CASCADE)
     value = models.FloatField()
 
-    objects = models.Manager()
-    gui = gui_probability_manager()
+    objects = gui_probability_manager()
 
     def __str__(self):
         toString = '{} labeled {} with certainty {}'.format(self.image, self.label, self.value)
         return toString
+
+
