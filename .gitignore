@@ -3,3 +3,4 @@ active-learning-interface/.idea/workspace.xml
 *.ipynb
 */.ipynb_checkpoints
 .idea/
+*/__pycache__
