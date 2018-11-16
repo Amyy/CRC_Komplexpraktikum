@@ -1,3 +1,5 @@
 active-learning-interface/.idea/workspace.xml
 */.idea/*
+*.ipynb
+*/.ipynb_checkpoints
 .idea/
