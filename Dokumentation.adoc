@@ -46,3 +46,9 @@ Labels eines Bildes setzen
 Userlabels.objects.set_userlabels(image, user, label_set)
 
 === NN Manager
+
+neue Labels in CSV schreiben
+[source,python]
+Userlabels.objects.write_csv()
+
+
