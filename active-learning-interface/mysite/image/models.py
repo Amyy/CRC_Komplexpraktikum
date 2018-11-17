@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 import numpy
-
+import csv
 
 
 class image_manager(models.Manager):
@@ -35,11 +35,11 @@ class probability_manager(models.Manager):
         return thr_labels
 
     def set_probabilities(self, image, probabilities = []):
-    #TODO testen
+    #TODO delete existing
         labels = Label.objects.all()
-        probabilities = zip(labels, probabilities)
+        probabilities = list(zip(labels, probabilities))
         for prob in probabilities:
-            probability = Probability(image=image, label=probabilities[0], value=probabilities[1])
+            probability = Probability(image=image, label=prob[0], value=prob[1])
             probability.save()
 
 
@@ -57,6 +57,15 @@ class userlabels_mangager(models.Manager):
 
     def countLabels(self, image):
         return self.filter(image=image).count()
+
+
+    def write_csv(self):
+        with open('annotations.csv', 'w') as csvfile:
+            spamwriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+            ul_all = self.all()
+            for userlabel in ul_all:
+                spamwriter.writerow([userlabel.image.name] + userlabel.get_labels())
+
 
 
 class Image(models.Model):
@@ -82,12 +91,21 @@ class Userlabels(models.Model):
     image = models.ForeignKey(Image, on_delete=models.CASCADE)
     author = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     label = models.ManyToManyField(Label)
+    objects = userlabels_mangager()
 
     def __str__(self):
         toString = 'Picture {} by {}'.format(self.image, self.author)
         return toString
 
-    objects = userlabels_mangager()
+    def get_labels(self):
+        labels_flags = []
+        labels_all = Label.objects.all()
+        for label in labels_all:
+            if label in self.label.all():
+                labels_flags.append('1')
+            else:
+                labels_flags.append('0')
+        return labels_flags
 
 
 
