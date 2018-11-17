@@ -34,6 +34,14 @@ class probability_manager(models.Manager):
                 thr_labels.append(prob.label)
         return thr_labels
 
+    def set_probabilities(self, image, probabilities = []):
+    #TODO testen
+        labels = Label.objects.all()
+        probabilities = zip(labels, probabilities)
+        for prob in probabilities:
+            probability = Probability(image=image, label=probabilities[0], value=probabilities[1])
+            probability.save()
+
 
 
 class userlabels_mangager(models.Manager):
