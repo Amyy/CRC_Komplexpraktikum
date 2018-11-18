@@ -18,3 +18,5 @@ gui/django/crc/crc/__pycache__/
 gui/django/crc/prototype/__pycache__/
 
 gui/django/crc/prototype/migrations/__pycache__/
+
+active-learning-interface/mysite/image/__pycache__/
