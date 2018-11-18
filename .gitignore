@@ -4,3 +4,17 @@ active-learning-interface/.idea/workspace.xml
 */.ipynb_checkpoints
 .idea/
 */__pycache__
+
+gui/django/\.idea/
+
+active-learning-interface/mysite/mysite/__pycache__/
+
+active-learning-interface/mysite/\.idea/
+
+gui/django/crc/\.idea/
+
+gui/django/crc/crc/__pycache__/
+
+gui/django/crc/prototype/__pycache__/
+
+gui/django/crc/prototype/migrations/__pycache__/
