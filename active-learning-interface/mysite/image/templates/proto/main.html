@@ -6,11 +6,11 @@
     <title>Main page</title>
       <!-- meta tag needed for bulma -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <link static href="{% static 'css/bulma-0.7.2/css/bulma.css' %}" rel="stylesheet">
-          <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+    <link static href="{% static 'css/bulma-0.7.2/css/bulma.css' %}" rel="stylesheet">
+    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
 
   </head>
-  <body>
+  <body onload="setLabels()">
     <section class="hero is-info">
 
     <div class="hero-body">
@@ -21,7 +21,7 @@
         </section>
       <div class="level-item has-text-centered">
         <h1 class="title">
-          CRC GUI Prototype2
+          CRC GUI Prototype
         </h1>
       </div>
 
@@ -31,7 +31,7 @@
   <section class="section">
     <div class="container">
       <figure class="image is-3by2" >
-        <img src="{{ images.data.url }}">
+        <img src="{{ image.data.url }}">
       </figure>
     </div>
   </section>
@@ -44,32 +44,32 @@
   <div class="container">
     <div class="level-item has-text-centered">
       <label class="checkbox">
-        <input type="checkbox" name="answer">
+        <input type="checkbox" name="answer" id="Forceps">
         forceps
       </label>
     </div>
     <div class="level-item has-text-centered">
       <label class="checkbox">
-        <input type="checkbox" name="answer">
+        <input type="checkbox" name="answer" id="Scalpel">
         scalpel
       </label>
     </div>
     <div class="level-item has-text-centered">
         <label class="checkbox is-left">
-          <input type="checkbox" name="answer">
+          <input type="checkbox" name="answer" id="Camera">
           camera
         </label>
       </div>
     <div class="level-item has-text-centered">
         <label class="checkbox">
-          <input type="checkbox" name="answer">
-          tool1
+          <input type="checkbox" name="answer" id="Scissor">
+          scissor
         </label>
       </div>
     <div class="level-item has-text-centered">
         <label class="checkbox">
-          <input type="checkbox" name="answer">
-          tool2
+          <input type="checkbox" name="answer" id="Saw">
+          saw
         </label>
       </div>
     </div>
@@ -79,5 +79,12 @@
       </div>
   </section>
   </body>
-
+    <script type="text/javascript">
+        function setLabels() {
+            // sets the labels determined by the ML Algorithm
+            {% for label in labels %}
+                document.getElementById("{{ label }}").checked = true
+            {% endfor %}
+        }
+    </script>
 </html>

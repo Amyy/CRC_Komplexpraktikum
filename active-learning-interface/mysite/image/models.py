@@ -11,7 +11,7 @@ class gui_image_manager(models.Manager):
 
 
     def next_image(self):
-        return self.order_by('variance', '-count_userlabels').first()
+        return self.order_by('variance', '-count_userlabels').last()
 
 
 class gui_probability_manager(models.Manager):
