@@ -35,7 +35,7 @@ class probability_manager(models.Manager):
         return thr_labels
 
     def set_probabilities(self, image, probabilities = []):
-    #TODO delete existing
+        self.filter(image=image).delete()
         labels = Label.objects.all()
         probabilities = list(zip(labels, probabilities))
         for prob in probabilities:
