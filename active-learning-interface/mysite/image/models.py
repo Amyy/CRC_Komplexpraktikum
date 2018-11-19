@@ -1,10 +1,10 @@
 from django.db import models
 from django.contrib.auth.models import User
 import numpy
+import csv
 
 
-
-class gui_image_manager(models.Manager):
+class image_manager(models.Manager):
     def set_userlabels(self, image, label_set = []):
         image.label_set.set(label_set)
         image.save()
@@ -14,7 +14,7 @@ class gui_image_manager(models.Manager):
         return self.order_by('variance', '-count_userlabels').last()
 
 
-class gui_probability_manager(models.Manager):
+class probability_manager(models.Manager):
     def calc_variance(self, image):
         probabilities = self.filter(image=image).values_list('value')
         prob_values = [p[0] for p in probabilities]
@@ -34,9 +34,17 @@ class gui_probability_manager(models.Manager):
                 thr_labels.append(prob.label)
         return thr_labels
 
+    def set_probabilities(self, image, probabilities = []):
+        self.filter(image=image).delete()
+        labels = Label.objects.all()
+        probabilities = list(zip(labels, probabilities))
+        for prob in probabilities:
+            probability = Probability(image=image, label=prob[0], value=prob[1])
+            probability.save()
 
 
-class gui_userlabels_mangager(models.Manager):
+
+class userlabels_mangager(models.Manager):
     def set_userlabels(self, image, user, label_set = []):
         userlabels = Userlabels(image = image, author = user)
         userlabels.save()
@@ -51,13 +59,22 @@ class gui_userlabels_mangager(models.Manager):
         return self.filter(image=image).count()
 
 
+    def write_csv(self):
+        with open('annotations.csv', 'w') as csvfile:
+            spamwriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+            ul_all = self.all()
+            for userlabel in ul_all:
+                spamwriter.writerow([userlabel.image.name] + userlabel.get_labels())
+
+
+
 class Image(models.Model):
     name = models.CharField(max_length=200)
     variance = models.FloatField()
     data = models.ImageField()
     count_userlabels = models.IntegerField()
 
-    objects = gui_image_manager()
+    objects = image_manager()
 
     def __str__(self):
         return self.name
@@ -74,12 +91,21 @@ class Userlabels(models.Model):
     image = models.ForeignKey(Image, on_delete=models.CASCADE)
     author = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     label = models.ManyToManyField(Label)
+    objects = userlabels_mangager()
 
     def __str__(self):
         toString = 'Picture {} by {}'.format(self.image, self.author)
         return toString
 
-    objects = gui_userlabels_mangager()
+    def get_labels(self):
+        labels_flags = []
+        labels_all = Label.objects.all()
+        for label in labels_all:
+            if label in self.label.all():
+                labels_flags.append('1')
+            else:
+                labels_flags.append('0')
+        return labels_flags
 
 
 
@@ -89,7 +115,7 @@ class Probability(models.Model):
     label = models.ForeignKey(Label, on_delete=models.CASCADE)
     value = models.FloatField()
 
-    objects = gui_probability_manager()
+    objects = probability_manager()
 
     def __str__(self):
         toString = '{} labeled {} with certainty {}'.format(self.image, self.label, self.value)
