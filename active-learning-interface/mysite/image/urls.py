@@ -1,5 +1,5 @@
 from django.urls import path
-
+from django.conf.urls import url
 from . import views
 
 urlpatterns = [
@@ -10,5 +10,8 @@ urlpatterns = [
     path('', views.login, name='login'),
     # change password
     # accessed via http://localhost:8000/prototype/password
-    path('changePassword', views.password, name='changePassword')
+    path('changePassword', views.password, name='changePassword'),
+    # created a function in the view, so that the selected labels can get saved
+    path('getSelectedLabels', views.getSelectedLabels, name='getSelectedLabels'),
 ]
+

@@ -41,50 +41,48 @@
       selection by clicking the Submit button
     </div>
   </section>
-  <div class="container">
-    <div class="level-item has-text-centered">
-      <label class="checkbox">
-        <input type="checkbox" name="answer" id="Forceps">
-        forceps
-      </label>
-    </div>
-    <div class="level-item has-text-centered">
-      <label class="checkbox">
-        <input type="checkbox" name="answer" id="Scalpel">
-        scalpel
-      </label>
-    </div>
-    <div class="level-item has-text-centered">
-        <label class="checkbox is-left">
-          <input type="checkbox" name="answer" id="Camera">
-          camera
-        </label>
+    <form action="getSelectedLabels" method="POST">
+    {% csrf_token %}
+      <div class="container">
+          {% for label in labels %}
+        <div class="level-item has-text-centered">
+          <label class="checkbox">
+            <input type="checkbox" name="answer" id="{{ label }}">
+            {{ label }}
+          </label>
+        </div>
+          {% endfor %}
+
+        <input type="submit" class="button is-link is-centered" value="OK">
       </div>
-    <div class="level-item has-text-centered">
-        <label class="checkbox">
-          <input type="checkbox" name="answer" id="Scissor">
-          scissor
-        </label>
-      </div>
-    <div class="level-item has-text-centered">
-        <label class="checkbox">
-          <input type="checkbox" name="answer" id="Saw">
-          saw
-        </label>
-      </div>
-    </div>
-    <section class="section is-centered">
-      <div class="level-item has-text-centered">
-        <button class="button is-link" onclick="location.href='{% url 'login' %}'">Submit</button>
-      </div>
-  </section>
+    </form>
+
+  <p id="demo"></p>
   </body>
     <script type="text/javascript">
         function setLabels() {
             // sets the labels determined by the ML Algorithm
-            {% for label in labels %}
-                document.getElementById("{{ label }}").checked = true
+            {% for imageLabel in imageLabels %}
+                document.getElementById("{{ imageLabel }}").checked = true
             {% endfor %}
         }
+        function sendLabels() {
+            var checkboxes = document.getElementsByName("answer")
+            var userLabels = []
+            for (var i = 0; i < checkboxes.length; i++){
+                if (checkboxes[i].checked){
+                    userLabels.push(checkboxes[i].id)
+                }
+            }
+            document.getElementById("demo").innerHTML = userLabels
+            console.log(userLabels)
+            // TODO: hierfür muss sicher noch der entsprechende User übergebn werden
+            // wenn es zu dem Aufruf kommt, dann mal in der entsprechenden Pythonfunktion
+            // eine Ausgabe so gestalten, dass sie mal den Input angibt
+            // danach mal schauen, was das Bild für Labels aufweist
+            //{ Userlabels.objects.set_userlabels(image, user, userLabels) }
+
+        }
+
     </script>
 </html>
