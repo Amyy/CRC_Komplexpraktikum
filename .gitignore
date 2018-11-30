@@ -4,6 +4,7 @@ active-learning-interface/.idea/workspace.xml
 */.ipynb_checkpoints
 .idea/
 */__pycache__
+*__pycache__*
 
 gui/django/\.idea/
 
