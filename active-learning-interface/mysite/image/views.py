@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from image.models import Image
-from image.models import Probability, Label
+from image.models import Probability, Label, Userlabels
 from django.http import HttpResponse
 
 
@@ -29,3 +29,9 @@ def getSelectedLabels(request):
 
     return render(request, 'proto/login.html')
 
+def annotations(request):
+    # Create the HttpResponse object with the appropriate CSV header.
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="annotations.csv"'
+    Userlabels.objects.write_csv(response)
+    return response

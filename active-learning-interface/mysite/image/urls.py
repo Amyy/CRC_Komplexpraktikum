@@ -13,5 +13,8 @@ urlpatterns = [
     path('changePassword', views.password, name='changePassword'),
     # created a function in the view, so that the selected labels can get saved
     path('getSelectedLabels', views.getSelectedLabels, name='getSelectedLabels'),
+    # get annotations csv file
+    path('annotations', views.annotations, name='annotations')
+
 ]
 
