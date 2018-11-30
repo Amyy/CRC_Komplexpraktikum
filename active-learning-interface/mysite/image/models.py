@@ -59,12 +59,11 @@ class userlabels_mangager(models.Manager):
         return self.filter(image=image).count()
 
 
-    def write_csv(self):
-        with open('annotations.csv', 'w') as csvfile:
-            spamwriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-            ul_all = self.all()
-            for userlabel in ul_all:
-                spamwriter.writerow([userlabel.image.name] + userlabel.get_labels())
+    def write_csv(self, csvfile):
+        spamwriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+        ul_all = self.all()
+        for userlabel in ul_all:
+            spamwriter.writerow([userlabel.image.name] + userlabel.get_labels())
 
 
 
