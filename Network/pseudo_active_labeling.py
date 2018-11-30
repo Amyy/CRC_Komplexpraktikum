@@ -442,6 +442,21 @@ for round_nr in range(rounds):
                 print('outputs_np[sample_nr]:',outputs_np[sample_nr])
                 quit()
 
+            #     labels.size: < built - in method
+            #     size
+            #     of
+            #     Tensor
+            #     object
+            #     at
+            #     0x7f727e2b2630 >
+            #     num_var_samples: 10
+            #     num_classes:
+            #     7
+            # len(outputs_np): (for one var_nr in num_var_samples): 128
+            # for sample_nr in range(len(outputs_np)):
+            #     outputs_np[sample_nr]: [0.72687554 0.22753797 0.72393167 0.12310091 0.15118773 0.45247307
+            #                             0.22790523]
+
         # provide stats
         raw_variance.append(batch_variance)
         target.append(labels_cpu.numpy())
