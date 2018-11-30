@@ -63,12 +63,12 @@ import losses
 ################################################################################
 preload_images = False  # load images to RAM once? else load from SSD every epoch
 trial_name = "Ins_AlexNet"
-output_path = "/local_home/wagnerame/Komplexpraktikum/pseudo_active_labeling"
+output_path = "/local_home/wagnerame/Komplexpraktikum/runs/"
 data_path = "/local_home/bodenstse/cholec80_1fps/frames/"
 
 rounds = 10
 epochs = 100
-new_labels_per_round = None  # gets calculated when unlabledset is loaded
+new_labels_per_round = None  # gets calculated when unlabeledset is loaded
 num_var_samples = 10  # how many outputs are calculated to determine the variance
 
 batch_size = 128
@@ -228,7 +228,7 @@ def calculate_accuracy(prediction, label):
 # Prepare environment
 ################################################################################
 output_path += trial_name + "_"
-output_path += datetime.datetime.now().strftime("%Y%m%d-%H%M") + "/"
+output_path += datetime.datetime.now().strftime("%Y.%m.%d-%H:%M") + "/"
 
 # replace existing folder
 if os.path.isdir(output_path):
@@ -390,6 +390,7 @@ for round_nr in range(rounds):
         test_acc = calculate_accuracy(prediction, target)
 
         # save epoch data
+        print('arrived at save funtion')
         epoch_dict = {}
         rawdata_dict = {}
         for i, path in enumerate(paths):
@@ -422,11 +423,11 @@ for round_nr in range(rounds):
         labels = labels_cpu.to(device)
 
         # calculate net output with dropouts-> variance
-        batch_variance = np.zeros((labels.size(0), num_var_samples, num_classes))
+        batch_variance = np.zeros((labels.size(0), num_var_samples, num_classes)) #labels.size(0) == all labels of one batch
         for var_nr in range(num_var_samples):
-            outputs_np = sig(net(images)).data.cpu().numpy()
+            outputs_np = sig(net(images)).data.cpu().numpy() # OUTPUT von NETZ für ALLE IMAGES in einer batch
             for sample_nr in range(len(outputs_np)):
-                batch_variance[sample_nr][var_nr] = outputs_np[sample_nr]
+                batch_variance[sample_nr][var_nr] = outputs_np[sample_nr] # len(outputs_np) == batch_size, outputs_np == batchsize x instruments
 
         # provide stats
         raw_variance.append(batch_variance)
