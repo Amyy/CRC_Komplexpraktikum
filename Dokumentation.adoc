@@ -51,6 +51,10 @@ neue Labels in CSV schreiben
 [source,python]
 Userlabels.objects.write_csv()
 
+über server:
+[source, http]
+http://localhost:8000/image/annotations
+
 Wahrscheinlichkeiten für ein Bild speichern
 [source,python]
 labels = [0.1, 0.2, 0.1, 0.8, 0.1]
