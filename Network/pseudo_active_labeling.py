@@ -393,7 +393,8 @@ for round_nr in range(rounds):
         test_acc = calculate_accuracy(prediction, target)
 
         # save epoch data
-        print('arrived at save funtion')
+        # TEST PRINT
+        # print('arrived at save funtion')
         epoch_dict = {}
         rawdata_dict = {}
         for i, path in enumerate(paths):
@@ -442,13 +443,7 @@ for round_nr in range(rounds):
                 print('outputs_np[sample_nr]:',outputs_np[sample_nr])
                 quit()
 
-            #     labels.size: < built - in method
-            #     size
-            #     of
-            #     Tensor
-            #     object
-            #     at
-            #     0x7f727e2b2630 >
+            #     labels.size: < built - in method size of Tensor object at 0x7f727e2b2630 >
             #     num_var_samples: 10
             #     num_classes:
             #     7
