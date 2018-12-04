@@ -1,34 +1,14 @@
+from django.contrib.auth.models import User, Group
 from rest_framework import serializers
 
-from prototype.models import BlogPost
 
-
-class BlogPostSerializer(serializers.ModelSerializer): # forms.ModelForm
-    url         = serializers.SerializerMethodField(read_only=True)
+class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = BlogPost
-        fields = [
-            'url',
-            'id',
-            'user',
-            'title',
-            'content',
-            'timestamp',
-        ]
-        read_only_fields = ['id', 'user']
+        model = User
+        fields = ('url', 'username', 'email', 'groups')
 
-    # converts to JSON
-    # validations for data passed
 
-    def get_url(self, obj):
-        # request
-        request = self.context.get("request")
-        return obj.get_api_url(request=request)
-
-    def validate_title(self, value):
-        qs = BlogPost.objects.filter(title__iexact=value) # including instance
-        if self.instance:
-            qs = qs.exclude(pk=self.instance.pk)
-        if qs.exists():
-            raise serializers.ValidationError("This title has already been used")
-        return value
+class GroupSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Group
+        fields = ('url', 'name')
