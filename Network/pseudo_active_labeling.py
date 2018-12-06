@@ -63,7 +63,10 @@ import losses
 ################################################################################
 preload_images = False  # load images to RAM once? else load from SSD every epoch
 trial_name = "Ins_AlexNet"
-output_path = "/local_home/wagnerame/Komplexpraktikum/runs/"
+# output_path = "/local_home/wagnerame/Komplexpraktikum/runs/"
+# data_path = "/local_home/bodenstse/cholec80_1fps/frames/"
+
+output_path = "/mnt/g27prist/TCO/TCO-Studenten/wagnerame/testing_alexnet/"
 data_path = "/local_home/bodenstse/cholec80_1fps/frames/"
 
 rounds = 10
@@ -78,33 +81,47 @@ width = 384
 height = 216
 num_classes = 7
 
-labeled_opsets = []
-labeled_ops = [data_path + "1/02",  # labeledset ca. 10%
-               data_path + "1/04",
-               data_path + "1/06",
-               data_path + "1/12",
-               data_path + "1/24",
-               data_path + "1/29"]
+# labeled_opsets = []
+# labeled_ops = [data_path + "1/02",  # labeledset ca. 10%
+#                data_path + "1/04",
+#                data_path + "1/06",
+#                data_path + "1/12",
+#                data_path + "1/24",
+#                data_path + "1/29"]
+#
+# unlabeled_opsets = [data_path + "2/",  # unlabeledset ca. 90% -> 9 times adding 10% = 100% at the end
+#                     data_path + "3/"]
+# unlabeled_ops = [data_path + "1/34",
+#                  data_path + "1/37",
+#                  data_path + "1/38",
+#                  data_path + "1/39",
+#                  data_path + "1/44",
+#                  data_path + "1/58",
+#                  data_path + "1/60",
+#                  data_path + "1/61",
+#                  data_path + "1/64",
+#                  data_path + "1/66",
+#                  data_path + "1/75",
+#                  data_path + "1/78",
+#                  data_path + "1/79",
+#                  data_path + "1/80"]
+#
+# test_opsets = [data_path + "4/"] # data_path = "/local_home/bodenstse/cholec80_1fps/frames/"
+# test_ops = []
 
-unlabeled_opsets = [data_path + "2/",  # unlabeledset ca. 90% -> 9 times adding 10% = 100% at the end
-                    data_path + "3/"]
+labeled_opsets = []
+labeled_ops = [data_path + "1/02",
+               data_path + "1/04"]  # labeledset ca. 10%
+
+unlabeled_opsets = [data_path + "2/01",  # unlabeledset ca. 90% -> 9 times adding 10% = 100% at the end
+                    data_path + "3/10"]
 unlabeled_ops = [data_path + "1/34",
                  data_path + "1/37",
-                 data_path + "1/38",
-                 data_path + "1/39",
-                 data_path + "1/44",
-                 data_path + "1/58",
-                 data_path + "1/60",
-                 data_path + "1/61",
-                 data_path + "1/64",
-                 data_path + "1/66",
-                 data_path + "1/75",
-                 data_path + "1/78",
-                 data_path + "1/79",
-                 data_path + "1/80"]
+                 data_path + "1/38"
+                 ]
 
-test_opsets = [data_path + "4/"] # data_path = "/local_home/bodenstse/cholec80_1fps/frames/"
-test_ops = []
+test_opsets = [data_path + "4/07"] # data_path = "/local_home/bodenstse/cholec80_1fps/frames/"
+test_ops = ['/local_home/bodenstse/cholec80_1fps/frames/4/57']
 
 ################################################################################
 # Parse Comandline args
@@ -137,8 +154,8 @@ for opt, arg in opts:
     elif opt == '-t':
         trial_name = arg
 
-#do_debug = '-d' in [e for e, _ in opts]
-do_debug = True # set debug mode default to True
+do_debug = '-d' in [e for e, _ in opts]
+#do_debug = True # set debug mode default to True
 
 ################################################################################
 # Define functions
@@ -428,21 +445,14 @@ for round_nr in range(rounds):
 
         # calculate net output with dropouts-> variance
         batch_variance = np.zeros((labels.size(0), num_var_samples, num_classes)) #labels.size(0) == all labels of one batch
-        print('labels.size(0):',labels.size(0))
-        print('labels.size:',labels.size)
-        print('num_var_samples:', num_var_samples)
-        print('num_classes:\n', num_classes)
 
         for var_nr in range(num_var_samples):
             outputs_np = sig(net(images)).data.cpu().numpy() # OUTPUT von NETZ für ALLE IMAGES in einer batch
-            print('len(outputs_np): (for one var_nr in num_var_samples):',len(outputs_np))
 
-            for sample_nr in range(len(outputs_np)):
-                print('for sample_nr in range(len(outputs_np)):')
-                batch_variance[sample_nr][var_nr] = outputs_np[sample_nr] # len(outputs_np) == batch_size, outputs_np == batchsize x instruments
-                print('outputs_np[sample_nr]:',outputs_np[sample_nr])
+            for sample_nr in range(len(outputs_np)): # len(outputs_np): 128 == batch_size
+                batch_variance[sample_nr][var_nr] = outputs_np[sample_nr] # batch_variance[0].size: 70 , batch_variance[0][0].size: 7
 
-            #     labels.size: < built - in method size of Tensor object at 0x7f727e2b2630 >
+            #     labels.size(0): 128
             #     num_var_samples: 10
             #     num_classes: 7
             # len(outputs_np): (for one var_nr in num_var_samples): 128
@@ -461,7 +471,15 @@ for round_nr in range(rounds):
     paths = np.concatenate(paths)
 
     test_var_f1 = calculate_f1(np.mean(raw_variance, axis=1), target)
-    test_var = np.mean(np.var(raw_variance, axis=1), axis=0)
+    test_var_batch = np.var(raw_variance, axis=1)
+    for sample_nr in range(len(test_var_batch)):
+        instr_one_image = test_var_batch[sample_nr]
+        print('instr one image', instr_one_image) # instr one image [0.00115019 0.00279964 0.00234942 0.00068003 0.00077934 0.00134419 0.00246692]
+        print('path to image', paths[sample_nr]) # path to image /local_home/bodenstse/cholec80_1fps/frames/4/57/00002629.png
+
+    quit()
+
+    test_var = np.mean(test_var_batch, axis=0)
 
     # save variance data
     round_dict = {}
@@ -469,17 +487,20 @@ for round_nr in range(rounds):
     for i, path in enumerate(paths):
         rawdata_dict[path] = {'label': target[i],
                               'var': raw_variance[i]}
-    print('rawdata_dict:',rawdata_dict)
-    quit()
     round_dict['raw'] = rawdata_dict
     round_dict['f1'] = test_var_f1
     round_dict['var'] = test_var
+    print('test var', test_var)
     torch.save(round_dict, round_output_path + "testdata_variance.tar")
+    # '/local_home/bodenstse/cholec80_1fps/frames/4/19/00001217.png': {'label': array([0., 0., 1., 0., 0., 0., 0.], dtype=float32), 'var': array([[0.4417741 , 0.22692899, 0.60308313, 0.12556888, 0.27337235,
+    #    0.20510106, 0.1672729 ], ... }
+
 
     debug("\n")  # new line after progress bar
     write_to_log("         Test (var_f1 %.3f, var [%.5f %.5f %.5f %.5f %.5f %.5f %.5f])\n"
                  % (test_var_f1, test_var[0], test_var[1], test_var[2],
                     test_var[3], test_var[4], test_var[5], test_var[6]))
+
 
     """ iterate over unlabeledset (once per round)
                   calculate variance on unlabeled data
