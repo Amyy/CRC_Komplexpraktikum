@@ -441,7 +441,6 @@ for round_nr in range(rounds):
                 print('for sample_nr in range(len(outputs_np)):')
                 batch_variance[sample_nr][var_nr] = outputs_np[sample_nr] # len(outputs_np) == batch_size, outputs_np == batchsize x instruments
                 print('outputs_np[sample_nr]:',outputs_np[sample_nr])
-                quit()
 
             #     labels.size: < built - in method size of Tensor object at 0x7f727e2b2630 >
             #     num_var_samples: 10
@@ -470,6 +469,8 @@ for round_nr in range(rounds):
     for i, path in enumerate(paths):
         rawdata_dict[path] = {'label': target[i],
                               'var': raw_variance[i]}
+    print('rawdata_dict:',rawdata_dict)
+    quit()
     round_dict['raw'] = rawdata_dict
     round_dict['f1'] = test_var_f1
     round_dict['var'] = test_var
