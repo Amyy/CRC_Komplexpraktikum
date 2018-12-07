@@ -54,6 +54,9 @@ class probability_manager(models.Manager):
                 print(path)
                 print(probabilities)
 
+#    def get_path(self, opset, op, picture):
+#        return '/' + opset + '/' + op + '/' + picture + '.png'
+
 
 
 class userlabels_mangager(models.Manager):
@@ -83,6 +86,8 @@ class Image(models.Model):
     variance = models.FloatField()
     data = models.ImageField()
     count_userlabels = models.IntegerField()
+    opset = models.IntegerField()
+    op = models.IntegerField()
 
     objects = image_manager()
 
