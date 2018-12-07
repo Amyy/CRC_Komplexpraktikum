@@ -5,6 +5,7 @@ active-learning-interface/.idea/workspace.xml
 .idea/
 */__pycache__
 *__pycache__*
+active-learning-interface/mysite/image/migrations/__pycache__/*
 
 gui/django/\.idea/
 
