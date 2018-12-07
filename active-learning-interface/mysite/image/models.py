@@ -3,15 +3,29 @@ from django.contrib.auth.models import User
 import numpy
 import csv
 
-
 class image_manager(models.Manager):
     def set_userlabels(self, image, label_set = []):
         image.label_set.set(label_set)
         image.save()
 
-
     def next_image(self):
         return self.order_by('variance', '-count_userlabels').last()
+
+    def get_image(self, opset=0, op=0, number=0, path=False):
+        #Eigenschaften aus Pfad extrahieren
+        if path:
+            split = path.split('/')
+            opset = split[len(split)-3]
+            op = split[len(split)-2]
+            number = int(split[len(split)-1].split('.')[0])
+
+        images = self.filter(opset=opset, op=op, number=number)
+        if not images:
+            image = Image(name=str(number), opset=opset, op=op, number=number)
+            image.save()
+            images = self.filter(opset=opset, op=op, number=number)
+        return images.first()
+
 
 
 class probability_manager(models.Manager):
@@ -45,8 +59,20 @@ class probability_manager(models.Manager):
     def read_annotations(self, path):
         with open(path, 'r') as csvfile:
             csvreader = csv.reader(csvfile, delimiter=',', quotechar='|')
+
             for row in csvreader:
-                print (', '.join(row))
+                probabilities = []
+                path = row[0]
+                for i in range(1,8):
+                    probabilities.append(float(row[i]))
+                image = Image.objects.get_image(path=path)
+                self.set_probabilities(image=image, probabilities=probabilities)
+
+
+
+#    def get_path(self, opset, op, picture):
+#        return '/' + opset + '/' + op + '/' + picture + '.png'
+
 
 
 class userlabels_mangager(models.Manager):
@@ -73,9 +99,12 @@ class userlabels_mangager(models.Manager):
 
 class Image(models.Model):
     name = models.CharField(max_length=200)
-    variance = models.FloatField()
-    data = models.ImageField()
-    count_userlabels = models.IntegerField()
+    variance = models.FloatField(null=True)
+    data = models.ImageField(null=True, default='default.jpg')
+    count_userlabels = models.IntegerField(null=True)
+    opset = models.IntegerField(null=True)
+    op = models.IntegerField(null=True)
+    number = models.IntegerField(null=True)
 
     objects = image_manager()
 
@@ -86,6 +115,7 @@ class Image(models.Model):
 
 class Label(models.Model):
     name = models.CharField(max_length=50)
+    order = models.IntegerField()
 
     def __str__(self):
         return self.name
