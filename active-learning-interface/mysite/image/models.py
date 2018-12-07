@@ -42,6 +42,11 @@ class probability_manager(models.Manager):
             probability = Probability(image=image, label=prob[0], value=prob[1])
             probability.save()
 
+    def read_annotations(self, path):
+        with open(path, 'r') as csvfile:
+            csvreader = csv.reader(csvfile, delimiter=',', quotechar='|')
+            for row in csvreader:
+                print (', '.join(row))
 
 
 class userlabels_mangager(models.Manager):
@@ -64,7 +69,6 @@ class userlabels_mangager(models.Manager):
         ul_all = self.all()
         for userlabel in ul_all:
             spamwriter.writerow([userlabel.image.name] + userlabel.get_labels())
-
 
 
 class Image(models.Model):

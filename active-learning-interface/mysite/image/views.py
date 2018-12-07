@@ -1,7 +1,7 @@
 from django.shortcuts import render
-from image.models import Image
-from image.models import Probability, Label, Userlabels
+from image.models import *
 from django.http import HttpResponse
+import datetime
 
 
 def index(request):
@@ -32,6 +32,19 @@ def getSelectedLabels(request):
 def annotations(request):
     # Create the HttpResponse object with the appropriate CSV header.
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="annotations.csv"'
+    response['Content-Disposition'] = 'attachment; filename="annotations'+ datetime.datetime.now().strftime("%y-%m-%d-%H-%M")+'.csv"'
     Userlabels.objects.write_csv(response)
     return response
+
+def upload_probabilities(request):
+    if request.method == 'POST':
+        path = handle_uploaded_file(request.FILES['file'])
+        Probability.objects.read_annotations(path)
+    return index(request)
+
+def handle_uploaded_file(f):
+    path = 'uploads/' + datetime.datetime.now().strftime("%y-%m-%d-%H-%M") + '.csv'
+    with open(path, 'wb') as destination:
+        for chunk in f.chunks():
+            destination.write(chunk)
+    return path
