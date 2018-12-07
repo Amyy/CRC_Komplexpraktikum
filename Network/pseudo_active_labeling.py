@@ -247,8 +247,11 @@ def calculate_accuracy(prediction, label):
 ################################################################################
 # Prepare environment
 ################################################################################
-output_path += trial_name + "_"
-output_path += datetime.datetime.now().strftime("%Y.%m.%d-%H:%M") + "/"
+
+# output_path += trial_name + "_"
+#output_path += datetime.datetime.now().strftime("%Y.%m.%d-%H:%M") + "/"
+model_name = trial_name + "_" + datetime.datetime.now().strftime("%Y.%m.%d-%H:%M")
+output_path += model_name + "/"
 
 # replace existing folder
 if os.path.isdir(output_path):
@@ -473,7 +476,7 @@ for round_nr in range(rounds):
     test_var_f1 = calculate_f1(np.mean(raw_variance, axis=1), target)
     test_var_batch = np.var(raw_variance, axis=1)
 
-    with open(('var_' + trial_name + '.csv'), 'w') as csv_variances:  # ! add date_time string
+    with open(('var_' + model_name + '.csv'), 'w') as csv_variances:  # ! add date_time string
 
         for sample_nr in range(len(test_var_batch)):
 
