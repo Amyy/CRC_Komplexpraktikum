@@ -9,9 +9,10 @@ class image_manager(models.Manager):
         image.label_set.set(label_set)
         image.save()
 
-
     def next_image(self):
         return self.order_by('variance', '-count_userlabels').last()
+
+    #def get_image(self, opset, op, name):
 
 
 class probability_manager(models.Manager):
@@ -88,6 +89,7 @@ class Image(models.Model):
     count_userlabels = models.IntegerField()
     opset = models.IntegerField()
     op = models.IntegerField()
+    number = models.IntegerField()
 
     objects = image_manager()
 
