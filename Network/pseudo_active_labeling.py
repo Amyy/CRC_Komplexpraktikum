@@ -63,12 +63,14 @@ import losses
 ################################################################################
 preload_images = False  # load images to RAM once? else load from SSD every epoch
 trial_name = "Ins_AlexNet"
-output_path = "/local_home/wagnerame/Komplexpraktikum/pseudo_active_labeling"
+output_path = "/local_home/wagnerame/Komplexpraktikum/runs/"
 data_path = "/local_home/bodenstse/cholec80_1fps/frames/"
 
 rounds = 10
-epochs = 100
-new_labels_per_round = None  # gets calculated when unlabledset is loaded
+#epochs = 100
+epochs = 1 # epochs set to 1 for test purpose
+
+new_labels_per_round = None  # gets calculated when unlabeledset is loaded
 num_var_samples = 10  # how many outputs are calculated to determine the variance
 
 batch_size = 128
@@ -101,7 +103,7 @@ unlabeled_ops = [data_path + "1/34",
                  data_path + "1/79",
                  data_path + "1/80"]
 
-test_opsets = [data_path + "4/"]
+test_opsets = [data_path + "4/"] # data_path = "/local_home/bodenstse/cholec80_1fps/frames/"
 test_ops = []
 
 ################################################################################
@@ -135,7 +137,8 @@ for opt, arg in opts:
     elif opt == '-t':
         trial_name = arg
 
-do_debug = '-d' in [e for e, _ in opts]
+#do_debug = '-d' in [e for e, _ in opts]
+do_debug = True # set debug mode default to True
 
 ################################################################################
 # Define functions
@@ -228,7 +231,7 @@ def calculate_accuracy(prediction, label):
 # Prepare environment
 ################################################################################
 output_path += trial_name + "_"
-output_path += datetime.datetime.now().strftime("%Y%m%d-%H%M") + "/"
+output_path += datetime.datetime.now().strftime("%Y.%m.%d-%H:%M") + "/"
 
 # replace existing folder
 if os.path.isdir(output_path):
@@ -318,7 +321,7 @@ for round_nr in range(rounds):
         progress = 0
 
         """ iterate over labeledset
-            train the net by claculating predictions 
+            train the net by calculating predictions 
         """
         prediction = []
         target = []
@@ -390,6 +393,7 @@ for round_nr in range(rounds):
         test_acc = calculate_accuracy(prediction, target)
 
         # save epoch data
+        print('arrived at save funtion')
         epoch_dict = {}
         rawdata_dict = {}
         for i, path in enumerate(paths):
@@ -417,16 +421,41 @@ for round_nr in range(rounds):
         print_progress(i, len(test_loader))
 
         # prepare data
-        images, labels_cpu, path = data
+        images, labels_cpu, path = data #  for one iterator round: return img, sample['labels'], sample['path']
         images = images.to(device)
         labels = labels_cpu.to(device)
 
         # calculate net output with dropouts-> variance
-        batch_variance = np.zeros((labels.size(0), num_var_samples, num_classes))
+        batch_variance = np.zeros((labels.size(0), num_var_samples, num_classes)) #labels.size(0) == all labels of one batch
+        print('labels.size(0):',labels.size(0))
+        print('labels.size:',labels.size)
+        print('num_var_samples:', num_var_samples)
+        print('num_classes:\n', num_classes)
+
         for var_nr in range(num_var_samples):
-            outputs_np = sig(net(images)).data.cpu().numpy()
+            outputs_np = sig(net(images)).data.cpu().numpy() # OUTPUT von NETZ für ALLE IMAGES in einer batch
+            print('len(outputs_np): (for one var_nr in num_var_samples):',len(outputs_np))
+
             for sample_nr in range(len(outputs_np)):
-                batch_variance[sample_nr][var_nr] = outputs_np[sample_nr]
+                print('for sample_nr in range(len(outputs_np)):')
+                batch_variance[sample_nr][var_nr] = outputs_np[sample_nr] # len(outputs_np) == batch_size, outputs_np == batchsize x instruments
+                print('outputs_np[sample_nr]:',outputs_np[sample_nr])
+                quit()
+
+            #     labels.size: < built - in method
+            #     size
+            #     of
+            #     Tensor
+            #     object
+            #     at
+            #     0x7f727e2b2630 >
+            #     num_var_samples: 10
+            #     num_classes:
+            #     7
+            # len(outputs_np): (for one var_nr in num_var_samples): 128
+            # for sample_nr in range(len(outputs_np)):
+            #     outputs_np[sample_nr]: [0.72687554 0.22753797 0.72393167 0.12310091 0.15118773 0.45247307
+            #                             0.22790523]
 
         # provide stats
         raw_variance.append(batch_variance)

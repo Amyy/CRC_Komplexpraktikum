@@ -59,3 +59,7 @@ Wahrscheinlichkeiten für ein Bild speichern
 [source,python]
 labels = [0.1, 0.2, 0.1, 0.8, 0.1]
 Probability.objects.set_probabilities(image, labels)
+
+Python file upload (http POST)
+
+https://gist.github.com/yoavram/4351498

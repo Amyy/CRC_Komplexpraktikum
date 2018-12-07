@@ -28,7 +28,7 @@ class InstrumentDataset(data.Dataset):
 
         :param width: width the images should be resized to
         :param height: height the images should be resized to
-        :param transform: transformation that gets applied to images when beeing returned
+        :param transform: transformation that gets applied to images when being returned
         :param preload: boolean, defining if images should be loaded on initialisation or on return
         :param ops: list of OPs to be added to the dataset
         :param opsets: list of opset's to be added to the dataset
@@ -41,7 +41,7 @@ class InstrumentDataset(data.Dataset):
         self.preload = preload
         self.modulo = modulo
 
-        self. data = []
+        self. data = [] # data type: <class 'list'>, f.e. data: [{'img': None, 'labels': array([0., 0., 0., 0., 0., 0., 0.], dtype=float32), 'path': '/local_home/bodenstse/cholec80_1fps/frames/1/02/00000000.png'}]
 
         if ops is not None:
             self.load_ops(ops)
@@ -75,6 +75,7 @@ class InstrumentDataset(data.Dataset):
         :return: index
 
         """
+
         for index, element in enumerate(self.data):
             if element['path'] == path:
                 return index
@@ -92,22 +93,31 @@ class InstrumentDataset(data.Dataset):
         else:
             self.data.append({'path': path, 'img': None, 'labels': labels})
 
+        # TEST #
+        # print("data type:", type(self.data))
+        # print("data:", self.data)
+        # exit()
+
     def load_ops(self,ops):
         """Loads a list of OPs into the dataset
 
-        an OP is a folder containing images and labels of an opperation video
+        an OP is a folder containing images and labels of an operation video
 
         :param ops: list of OPs
 
         """
+
         for op in ops:
-            f = open(op + "/Ins.csv", "r")
-            print(op)
-            reader = csv.reader(f, delimiter=',')
+            f = open(op + "/Ins.csv", "r") # f.e. op == /local_home/bodenstse/cholec80_1fps/frames/4/57 ->
+            # f == /local_home/bodenstse/cholec80_1fps/frames/4/57/Ins.csv
+
+            #print(op)
+            reader = csv.reader(f, delimiter=',') # reader: reads csv file
             for i, row in enumerate(reader):
                 if i % self.modulo == 0:
-                    path = op + "/%08d.png" % i
-                    label = np.array(row[1:], dtype=np.float32)
+                    # print('row:', row) # row type: <class 'list'>, f.e. row: ['0', '0', '0', '0', '0', '0', '0', '0']
+                    path = op + "/%08d.png" % i # f.e. path: /local_home/bodenstse/cholec80_1fps/frames/1/02/00000000.png (for i == 0)
+                    label = np.array(row[1:], dtype=np.float32) # label type: <class 'numpy.ndarray'> , f.e. label: [0. 0. 0. 0. 0. 0. 0.]
                     self.add_sample(path,label)
 
     def load_opsets(self,opsets):
