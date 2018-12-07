@@ -1,15 +1,15 @@
 import requests
 
 
-
+### url, an die csv hochgeladen wird
 url = 'http://localhost:8000/image/upload'
+
+### 'file.cs' Pfad zur Datei, die hochgeladen wird
 files = {'file': open('file.csv', 'rb')}
 
 url_login='http://localhost:8000/admin/login/'
-
-user='admin'
-password='admin'
-
+user='network'
+password='upload88'
 client = requests.session()
 client.get(url_login)
 csrftoken = client.cookies['csrftoken']
