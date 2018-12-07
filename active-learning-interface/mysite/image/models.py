@@ -45,8 +45,15 @@ class probability_manager(models.Manager):
     def read_annotations(self, path):
         with open(path, 'r') as csvfile:
             csvreader = csv.reader(csvfile, delimiter=',', quotechar='|')
+
             for row in csvreader:
-                print (', '.join(row))
+                probabilities = []
+                path = row[0]
+                for i in range(1,7):
+                    probabilities.append(float(row[i]))
+                print(path)
+                print(probabilities)
+
 
 
 class userlabels_mangager(models.Manager):
@@ -86,6 +93,7 @@ class Image(models.Model):
 
 class Label(models.Model):
     name = models.CharField(max_length=50)
+    #order = models.IntegerField()
 
     def __str__(self):
         return self.name
