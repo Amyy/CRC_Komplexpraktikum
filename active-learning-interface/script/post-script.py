@@ -5,7 +5,7 @@ import requests
 url = 'http://localhost:8000/image/upload'
 
 ### 'file.cs' Pfad zur Datei, die hochgeladen wird
-files = {'file': open('../Network/var_Ins_AlexNet.csv', 'rb')}
+files = {'file': open('../Network/variances/var_Ins_AlexNet.csv', 'rb')}
 
 ### login with username 'network'
 url_login='http://localhost:8000/admin/login/'

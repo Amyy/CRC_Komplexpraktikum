@@ -476,7 +476,7 @@ for round_nr in range(rounds):
     test_var_f1 = calculate_f1(np.mean(raw_variance, axis=1), target)
     test_var_batch = np.var(raw_variance, axis=1)
 
-    with open(('var_' + model_name + '.csv'), 'w') as csv_variances:  # ! add date_time string
+    with open(('variances/var_' + model_name + '.csv'), 'w') as csv_variances:  # ! add date_time string
 
         for sample_nr in range(len(test_var_batch)):
 
