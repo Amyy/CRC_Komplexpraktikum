@@ -44,11 +44,10 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader
+import sys, os
 
 import torchvision.transforms as transforms
 
-import os
-import sys
 import getopt
 import datetime
 import numpy as np
@@ -57,6 +56,7 @@ from shutil import copy2
 import datasets
 import networks
 import losses
+import csv
 
 ################################################################################
 # Define parameters
@@ -472,10 +472,19 @@ for round_nr in range(rounds):
 
     test_var_f1 = calculate_f1(np.mean(raw_variance, axis=1), target)
     test_var_batch = np.var(raw_variance, axis=1)
-    for sample_nr in range(len(test_var_batch)):
-        instr_one_image = test_var_batch[sample_nr]
-        print('instr one image', instr_one_image) # instr one image [0.00115019 0.00279964 0.00234942 0.00068003 0.00077934 0.00134419 0.00246692]
-        print('path to image', paths[sample_nr]) # path to image /local_home/bodenstse/cholec80_1fps/frames/4/57/00002629.png
+
+    with open(('var_' + trial_name + '.csv'), 'w') as csv_variances:  # ! add date_time string
+
+        for sample_nr in range(len(test_var_batch)):
+
+            instr_one_image = test_var_batch[sample_nr]  # instr one image [0.00115019 0.00279964 0.00234942 0.00068003 0.00077934 0.00134419 0.00246692]
+
+            filewriter = csv.writer(csv_variances, delimiter = ',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+
+            var_list_one_image = list(map(str, instr_one_image))
+            var_list_one_image.insert(0, str(paths[sample_nr]))   # paths[sample_nr]: /local_home/bodenstse/cholec80_1fps/frames/4/57/00002629.png
+
+            filewriter.writerow(var_list_one_image)
 
     quit()
 
