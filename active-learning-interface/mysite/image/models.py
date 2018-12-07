@@ -93,7 +93,7 @@ class Image(models.Model):
 
 class Label(models.Model):
     name = models.CharField(max_length=50)
-    #order = models.IntegerField()
+    order = models.IntegerField()
 
     def __str__(self):
         return self.name
