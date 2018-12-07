@@ -7,6 +7,7 @@ url = 'http://localhost:8000/image/upload'
 ### 'file.cs' Pfad zur Datei, die hochgeladen wird
 files = {'file': open('file.csv', 'rb')}
 
+### login with username 'network'
 url_login='http://localhost:8000/admin/login/'
 user='network'
 password='upload88'
@@ -17,5 +18,8 @@ login_data = {'username':user,'password':password, 'csrfmiddlewaretoken':csrftok
 r1=client.post(url_login,data=login_data)
 csrftoken = client.cookies['csrftoken']
 payload={'csrfmiddlewaretoken':csrftoken}
+
+#send files
 r = client.post(url, files=files, data=payload)
-print(r.text)
+
+#print(r.text)
