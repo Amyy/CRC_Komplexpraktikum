@@ -3,7 +3,6 @@ from django.contrib.auth.models import User
 import numpy
 import csv
 
-
 class image_manager(models.Manager):
     def set_userlabels(self, image, label_set = []):
         image.label_set.set(label_set)
@@ -12,7 +11,21 @@ class image_manager(models.Manager):
     def next_image(self):
         return self.order_by('variance', '-count_userlabels').last()
 
-    #def get_image(self, opset, op, name):
+    def get_image(self, opset=0, op=0, number=0, path=False):
+        #Eigenschaften aus Pfad extrahieren
+        if path:
+            split = path.split('/')
+            opset = split[len(split)-3]
+            op = split[len(split)-2]
+            number = int(split[len(split)-1].split('.')[0])
+
+        images = self.filter(opset=opset, op=op, number=number)
+        if not images:
+            image = Image(name=str(number), opset=opset, op=op, number=number)
+            image.save()
+            images = self.filter(opset=opset, op=op, number=number)
+        return images.first()
+
 
 
 class probability_manager(models.Manager):
@@ -50,10 +63,12 @@ class probability_manager(models.Manager):
             for row in csvreader:
                 probabilities = []
                 path = row[0]
-                for i in range(1,7):
+                for i in range(1,8):
                     probabilities.append(float(row[i]))
-                print(path)
-                print(probabilities)
+                image = Image.objects.get_image(path=path)
+                self.set_probabilities(image=image, probabilities=probabilities)
+
+
 
 #    def get_path(self, opset, op, picture):
 #        return '/' + opset + '/' + op + '/' + picture + '.png'
@@ -84,12 +99,12 @@ class userlabels_mangager(models.Manager):
 
 class Image(models.Model):
     name = models.CharField(max_length=200)
-    variance = models.FloatField()
-    data = models.ImageField()
-    count_userlabels = models.IntegerField()
-    opset = models.IntegerField()
-    op = models.IntegerField()
-    number = models.IntegerField()
+    variance = models.FloatField(null=True)
+    data = models.ImageField(null=True, default='default.jpg')
+    count_userlabels = models.IntegerField(null=True)
+    opset = models.IntegerField(null=True)
+    op = models.IntegerField(null=True)
+    number = models.IntegerField(null=True)
 
     objects = image_manager()
 
