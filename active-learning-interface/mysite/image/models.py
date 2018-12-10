@@ -85,6 +85,10 @@ class userlabels_mangager(models.Manager):
         image.count_userlabels = self.countLabels(image)
         image.save()
 
+    def set_userlabels_str(self, image, user, label_set = []):
+        label_set_query = Label.objects.filter(name__in=label_set)
+        self.set_userlabels(image, user, label_set_query)
+
 
     def countLabels(self, image):
         return self.filter(image=image).count()
