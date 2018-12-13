@@ -21,7 +21,7 @@
         </section>
       <div class="level-item has-text-centered">
         <h1 class="title">
-          CRC GUI Prototype
+          CRC GUI Prototype2
         </h1>
       </div>
 
@@ -41,13 +41,14 @@
       selection by clicking the Submit button
     </div>
   </section>
+
     <form action="getSelectedLabels" method="POST">
     {% csrf_token %}
       <div class="container">
           {% for label in labels %}
         <div class="level-item has-text-centered">
           <label class="checkbox">
-            <input type="checkbox" name="answer" id="{{ label }}">
+            <input type="checkbox" name="answer" id="{{ label }}" value="{{ label }}">
             {{ label }}
           </label>
         </div>
@@ -66,23 +67,5 @@
                 document.getElementById("{{ imageLabel }}").checked = true
             {% endfor %}
         }
-        function sendLabels() {
-            var checkboxes = document.getElementsByName("answer")
-            var userLabels = []
-            for (var i = 0; i < checkboxes.length; i++){
-                if (checkboxes[i].checked){
-                    userLabels.push(checkboxes[i].id)
-                }
-            }
-            document.getElementById("demo").innerHTML = userLabels
-            console.log(userLabels)
-            // TODO: hierfür muss sicher noch der entsprechende User übergebn werden
-            // wenn es zu dem Aufruf kommt, dann mal in der entsprechenden Pythonfunktion
-            // eine Ausgabe so gestalten, dass sie mal den Input angibt
-            // danach mal schauen, was das Bild für Labels aufweist
-            //{ Userlabels.objects.set_userlabels(image, user, userLabels) }
-
-        }
-
     </script>
 </html>
