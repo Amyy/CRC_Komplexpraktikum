@@ -122,24 +122,33 @@ class userlabels_mangager(models.Manager):
             label_votes = dict()
             print(name, min_votes)
 
-            #find all votes for this image (counted by label)
-            for query in ul_group_label:
-                if query['image__name'] == name:
-                    label_votes[query['label__name']] = query['labels']
+            #no labels by users exist
+            if min_votes == 0:
+                pass
 
-            print(label_votes)
+            #found existing labels
+            else:
 
-            write_labels = []
-            for label in labels:
-                label_name = label.__str__()
-                label_string = '0'
-                if label_votes.__contains__(label_name):
-                    if label_votes[label_name] >= min_votes:
-                        label_string = '1'
-                write_labels.append(label_string)
+                #find all votes for this image (counted by label)
+                for query in ul_group_label:
+                    if query['image__name'] == name:
+                        label_votes[query['label__name']] = query['labels']
 
-            print(write_labels)
+                #print(label_votes)
 
+                #calculate majority vote and parse to string list
+                write_labels = []
+                for label in labels:
+                    label_name = label.__str__()
+                    label_string = '0'
+                    if label_votes.__contains__(label_name):
+                        if label_votes[label_name] >= min_votes:
+                            label_string = '1'
+                    write_labels.append(label_string)
+
+                #print(write_labels)
+
+            #write to csv file
             spamwriter.writerow([name] + write_labels)
 
 
