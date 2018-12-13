@@ -37,10 +37,9 @@ def annotations(request):
     return response
 
 def download_csv(request, opset, op):
-    print("download", opset, op)
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="annotations-'+str(opset)+'-'+str(op)+'.csv"'
-    Userlabels.objects.write_csv(response)
+    Userlabels.objects.generate_csv(response, opset, op)
     return response
 
 
