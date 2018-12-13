@@ -45,6 +45,11 @@ Labels eines Bildes setzen
 [source,python]
 Userlabels.objects.set_userlabels(image, user, label_set)
 
+oder mit label_set als Liste von Strings
+[source,python]
+Userlabels.objects.set_userlabels_str(image, user, label_set)
+
+
 === NN Manager
 
 neue Labels in CSV schreiben
