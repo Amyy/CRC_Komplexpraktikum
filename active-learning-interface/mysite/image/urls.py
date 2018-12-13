@@ -15,7 +15,10 @@ urlpatterns = [
     path('getSelectedLabels', views.getSelectedLabels, name='getSelectedLabels'),
     # get annotations csv file
     path('annotations', views.annotations, name='annotations'),
-    path('upload', views.upload_probabilities)
+    # upload variance from NN
+    path('upload', views.upload_probabilities),
+    # download csv file for specified opset, op
+    path('csv/<int:opset>/<int:op>/', views.download_csv)
 
 ]
 
