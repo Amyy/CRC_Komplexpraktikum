@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 import numpy
 import csv
+import math
 
 class image_manager(models.Manager):
     def set_userlabels(self, image, label_set = []):
@@ -99,6 +100,56 @@ class userlabels_mangager(models.Manager):
         ul_all = self.all()
         for userlabel in ul_all:
             spamwriter.writerow([userlabel.image.name] + userlabel.get_labels())
+
+    def generate_csv(self, csvfile, opset, op):
+        spamwriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+        #filter images by opset and op
+        ul_op = self.filter(image__opset = opset, image__op = op)
+        #group by image name, count total user votes
+        ul_group_name = ul_op.values('image__name').annotate(votes=models.Count('image__name')).order_by('image__name')
+        #group by label name, count total votes for specific label
+        ul_group_label = ul_op.values('image__name', 'label__name').annotate(labels=models.Count('label__name'))
+        #ul_group_label_dict = dict((d['image__name'], dict(d, index=index)) for (index, d) in enumerate(ul_group_label))
+        labels = Label.objects.all()
+        print(ul_group_name)
+        print(ul_group_label)
+        #print(ul_group_label_dict)
+
+        #iterate through images
+        for image in ul_group_name:
+            name = image['image__name']
+            min_votes = math.ceil(image.get('votes') / 2)
+            label_votes = dict()
+            print(name, min_votes)
+
+            #no labels by users exist
+            if min_votes == 0:
+                pass
+
+            #found existing labels
+            else:
+
+                #find all votes for this image (counted by label)
+                for query in ul_group_label:
+                    if query['image__name'] == name:
+                        label_votes[query['label__name']] = query['labels']
+
+                #print(label_votes)
+
+                #calculate majority vote and parse to string list
+                write_labels = []
+                for label in labels:
+                    label_name = label.__str__()
+                    label_string = '0'
+                    if label_votes.__contains__(label_name):
+                        if label_votes[label_name] >= min_votes:
+                            label_string = '1'
+                    write_labels.append(label_string)
+
+                #print(write_labels)
+
+            #write to csv file
+            spamwriter.writerow([name] + write_labels)
 
 
 class Image(models.Model):

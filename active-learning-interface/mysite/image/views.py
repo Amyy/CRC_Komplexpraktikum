@@ -36,6 +36,13 @@ def annotations(request):
     Userlabels.objects.write_csv(response)
     return response
 
+def download_csv(request, opset, op):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="annotations-'+str(opset)+'-'+str(op)+'.csv"'
+    Userlabels.objects.generate_csv(response, opset, op)
+    return response
+
+
 def upload_probabilities(request):
     if request.method == 'POST':
         path = handle_uploaded_file(request.FILES['file'])
