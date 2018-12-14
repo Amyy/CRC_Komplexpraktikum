@@ -11,8 +11,14 @@
 
   </head>
   <body onload="setLabels()">
+
+
     <section class="hero is-info">
 
+      <br/>
+      <p>  Logged in as: </p>
+      <p> {{user}} </p>
+      <button style="height:30px;width:70px"><a href="{% url 'logout'%}">Logout</a></button>
     <div class="hero-body">
         <section class="is-pulled-right">
             <a href="changePassword" class="icon-block">
@@ -41,7 +47,8 @@
       selection by clicking the Submit button
     </div>
   </section>
-    <form action="getSelectedLabels" method="POST">
+    <!-- action="getSelectedLabels/{{image}}"  onsubmit="getUserLabels()" method="POST"-->
+    <form onsubmit="getUserLabels()"  >
     {% csrf_token %}
       <div class="container">
           {% for label in labels %}
@@ -65,7 +72,9 @@
             {% for imageLabel in imageLabels %}
                 document.getElementById("{{ imageLabel }}").checked = true
             {% endfor %}
+
         }
+
         function sendLabels() {
             var checkboxes = document.getElementsByName("answer")
             var userLabels = []
@@ -83,6 +92,8 @@
             //{ Userlabels.objects.set_userlabels(image, user, userLabels) }
 
         }
+
+
 
     </script>
 </html>
