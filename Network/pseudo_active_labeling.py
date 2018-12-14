@@ -447,9 +447,9 @@ for round_nr in range(rounds):
         labels = labels_cpu.to(device)
 
         # calculate net output with dropouts-> variance
-        batch_variance = np.zeros((labels.size(0), num_var_samples, num_classes)) #labels.size(0) == all labels of one batch
+        batch_variance = np.zeros((labels.size(0), num_var_samples, num_classes)) #labels.size(0) == all labels of one batch, num_var_samples == 10, num_classes == 7
 
-        for var_nr in range(num_var_samples):
+        for var_nr in range(num_var_samples): # num_var_samples == 10
             outputs_np = sig(net(images)).data.cpu().numpy() # OUTPUT von NETZ für ALLE IMAGES in einer batch
 
             for sample_nr in range(len(outputs_np)): # len(outputs_np): 128 == batch_size
@@ -475,22 +475,31 @@ for round_nr in range(rounds):
 
     test_var_f1 = calculate_f1(np.mean(raw_variance, axis=1), target)
     test_var_batch = np.var(raw_variance, axis=1)
+    test_mean_batch = np.mean(raw_variance, axis=1)
 
     with open(('variances/var_' + model_name + '.csv'), 'w') as csv_variances:  # ! add date_time string
 
         for sample_nr in range(len(test_var_batch)):
 
-            instr_one_image = test_var_batch[sample_nr]  # instr one image [0.00115019 0.00279964 0.00234942 0.00068003 0.00077934 0.00134419 0.00246692]
+            # variance for 7 instruments in one image each
+            var_instr_one_image = test_var_batch[sample_nr]  # instr one image [0.00115019 0.00279964 0.00234942 0.00068003 0.00077934 0.00134419 0.00246692]
+            # one variance for 7 instruments in one image
+            var_one_image = np.mean(var_instr_one_image)
+
+            # mean value of each instrument in one image
+            mean_list_one_image = test_mean_batch[sample_nr]
+
+            # var_list_one_image = list(map(str, var_instr_one_image))
+            mean_list_one_image = list(map(str, mean_list_one_image))
 
             filewriter = csv.writer(csv_variances, delimiter = ',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
 
-            var_list_one_image = list(map(str, instr_one_image))
-            var_list_one_image.insert(0, str(paths[sample_nr]))   # paths[sample_nr]: /local_home/bodenstse/cholec80_1fps/frames/4/57/00002629.png
+            mean_list_one_image.insert(0, str(paths[sample_nr]))   # paths[sample_nr]: /local_home/bodenstse/cholec80_1fps/frames/4/57/00002629.png
+            mean_list_one_image.append(str(var_one_image))
 
-            filewriter.writerow(var_list_one_image)
+            filewriter.writerow(mean_list_one_image)
 
-    quit()
-
+    #quit()
     test_var = np.mean(test_var_batch, axis=0)
 
     # save variance data
