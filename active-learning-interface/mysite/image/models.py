@@ -4,6 +4,9 @@ import numpy
 import csv
 import math
 
+FRAME_FREQ = 25
+
+
 class image_manager(models.Manager):
     def set_userlabels(self, image, label_set = []):
         image.label_set.set(label_set)
@@ -77,6 +80,7 @@ class probability_manager(models.Manager):
 
 
 class userlabels_mangager(models.Manager):
+
     def set_userlabels(self, image, user, label_set = []):
         userlabels = Userlabels(image = image, author = user)
         userlabels.save()
@@ -94,7 +98,6 @@ class userlabels_mangager(models.Manager):
     def countLabels(self, image):
         return self.filter(image=image).count()
 
-
     def write_csv(self, csvfile):
         spamwriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
         ul_all = self.all()
@@ -104,52 +107,50 @@ class userlabels_mangager(models.Manager):
     def generate_csv(self, csvfile, opset, op):
         spamwriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
         #filter images by opset and op
+        images = Image.objects.filter(opset=opset, op=op).order_by('number')
         ul_op = self.filter(image__opset = opset, image__op = op)
-        #group by image name, count total user votes
-        ul_group_name = ul_op.values('image__name').annotate(votes=models.Count('image__name')).order_by('image__name')
-        #group by label name, count total votes for specific label
-        ul_group_label = ul_op.values('image__name', 'label__name').annotate(labels=models.Count('label__name'))
         #ul_group_label_dict = dict((d['image__name'], dict(d, index=index)) for (index, d) in enumerate(ul_group_label))
         labels = Label.objects.all()
-        print(ul_group_name)
-        print(ul_group_label)
-        #print(ul_group_label_dict)
 
         #iterate through images
-        for image in ul_group_name:
-            name = image['image__name']
-            min_votes = math.ceil(image.get('votes') / 2)
-            label_votes = dict()
-            print(name, min_votes)
+        for image in images:
+            name = image.name
+            ul_image = self.filter(image__name=name).values('label__name').annotate(models.Count('label__name'))
+            write_labels = []
 
-            #no labels by users exist
-            if min_votes == 0:
-                pass
+            #if userlabes exist
+            #calculate majority vote
+            if ul_image:
+                min_votes = math.ceil(len(ul_image) / 2)
+                label_votes = dict()
+                #print(name, min_votes)
 
-            #found existing labels
-            else:
+                # generate dict of labels and count of votes
+                ul_image_dict = dict([])
+                for ulabel in ul_image:
+                    ul_image_dict[ulabel['label__name']] = ulabel['label__name__count']
+                #print(ul_image_dict)
 
-                #find all votes for this image (counted by label)
-                for query in ul_group_label:
-                    if query['image__name'] == name:
-                        label_votes[query['label__name']] = query['labels']
-
-                #print(label_votes)
-
-                #calculate majority vote and parse to string list
-                write_labels = []
+                # calculate majority vote and parse to string list
                 for label in labels:
                     label_name = label.__str__()
                     label_string = '0'
-                    if label_votes.__contains__(label_name):
-                        if label_votes[label_name] >= min_votes:
+                    if ul_image_dict.__contains__(label_name):
+                        if ul_image_dict[label_name] >= min_votes:
                             label_string = '1'
                     write_labels.append(label_string)
 
-                #print(write_labels)
+            #if no userlabels exist
+            #calculate NN prediction
+            else:
+                for label in labels:
+                    label_name = label.__str__()
+                    label_string = '0'
+                    write_labels.append(label_string)
 
+            #print([name] + write_labels)
             #write to csv file
-            spamwriter.writerow([name] + write_labels)
+            spamwriter.writerow([int(name) * FRAME_FREQ] + write_labels)
 
 
 class Image(models.Model):
