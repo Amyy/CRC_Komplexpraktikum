@@ -480,17 +480,20 @@ for round_nr in range(rounds):
     test_mean_batch = np.mean(raw_variance, axis=1)
 
     # middle value of the variances of every instrument
-    test_var_batch = np.mean(test_var_batch, axis=1) # instruments: were axis 2 in test_var_batch
+    test_var_batch_merged = np.mean(test_var_batch, axis=1) # instruments: were axis 2 in test_var_batch
 
     with open(('variances/var_' + model_name + '.csv'), 'w') as csv_variances:  # ! add date_time string
 
         for sample_nr in range(len(test_var_batch)):
 
             # variance for 7 instruments in one image each
-            var_one_image = test_var_batch[sample_nr]  # instr one image [0.00115019 0.00279964 0.00234942 0.00068003 0.00077934 0.00134419 0.00246692]
-
+            # test_var_batch[sample_nr] # gives: instr variance for one image [0.00115019 0.00279964 0.00234942 0.00068003 0.00077934 0.00134419 0.00246692]
             # one variance for 7 instruments in one image
             # var_one_image = np.mean(var_instr_one_image)
+            # --> outcommented because too slow
+
+            # variance for all instruments in one image (already merged with test_mean_batch = np.mean(raw_variance, axis=1))
+            var_one_image = test_var_batch_merged[sample_nr]
 
             # mean value of each instrument in one image
             mean_list_one_image = test_mean_batch[sample_nr]
@@ -509,7 +512,6 @@ for round_nr in range(rounds):
             binary_list.append(str(var_one_image))
 
             filewriter.writerow(binary_list)
-            quit()
 
     test_var = np.mean(test_var_batch, axis=0)
 
