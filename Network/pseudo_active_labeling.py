@@ -81,6 +81,8 @@ width = 384
 height = 216
 num_classes = 7
 
+thresh_prob = 0.5
+
 # labeled_opsets = []
 # labeled_ops = [data_path + "1/02",  # labeledset ca. 10%
 #                data_path + "1/04",
@@ -477,29 +479,38 @@ for round_nr in range(rounds):
     test_var_batch = np.var(raw_variance, axis=1)
     test_mean_batch = np.mean(raw_variance, axis=1)
 
+    # middle value of the variances of every instrument
+    test_var_batch = np.mean(test_var_batch, axis=1) # instruments: were axis 2 in test_var_batch
+
     with open(('variances/var_' + model_name + '.csv'), 'w') as csv_variances:  # ! add date_time string
 
         for sample_nr in range(len(test_var_batch)):
 
             # variance for 7 instruments in one image each
-            var_instr_one_image = test_var_batch[sample_nr]  # instr one image [0.00115019 0.00279964 0.00234942 0.00068003 0.00077934 0.00134419 0.00246692]
+            var_one_image = test_var_batch[sample_nr]  # instr one image [0.00115019 0.00279964 0.00234942 0.00068003 0.00077934 0.00134419 0.00246692]
+
             # one variance for 7 instruments in one image
-            var_one_image = np.mean(var_instr_one_image)
+            # var_one_image = np.mean(var_instr_one_image)
 
             # mean value of each instrument in one image
             mean_list_one_image = test_mean_batch[sample_nr]
 
+            # convert probabilites above thresh_prob into 1
+            mean_list_one_image[mean_list_one_image >= thresh_prob] = 1
+            # convert probabilites below thresh_prob into 0
+            mean_list_one_image[mean_list_one_image < thresh_prob] = 0
+
             # var_list_one_image = list(map(str, var_instr_one_image))
-            mean_list_one_image = list(map(str, mean_list_one_image))
+            binary_list = list(map(str, mean_list_one_image))
 
             filewriter = csv.writer(csv_variances, delimiter = ',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
 
-            mean_list_one_image.insert(0, str(paths[sample_nr]))   # paths[sample_nr]: /local_home/bodenstse/cholec80_1fps/frames/4/57/00002629.png
-            mean_list_one_image.append(str(var_one_image))
+            binary_list.insert(0, str(paths[sample_nr]))   # paths[sample_nr]: /local_home/bodenstse/cholec80_1fps/frames/4/57/00002629.png
+            binary_list.append(str(var_one_image))
 
-            filewriter.writerow(mean_list_one_image)
+            filewriter.writerow(binary_list)
+            quit()
 
-    #quit()
     test_var = np.mean(test_var_batch, axis=0)
 
     # save variance data
@@ -511,7 +522,7 @@ for round_nr in range(rounds):
     round_dict['raw'] = rawdata_dict
     round_dict['f1'] = test_var_f1
     round_dict['var'] = test_var
-    print('test var', test_var)
+    #print('test var', test_var)
     torch.save(round_dict, round_output_path + "testdata_variance.tar")
     # '/local_home/bodenstse/cholec80_1fps/frames/4/19/00001217.png': {'label': array([0., 0., 1., 0., 0., 0., 0.], dtype=float32), 'var': array([[0.4417741 , 0.22692899, 0.60308313, 0.12556888, 0.27337235,
     #    0.20510106, 0.1672729 ], ... }
