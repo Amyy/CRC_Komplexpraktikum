@@ -1,5 +1,6 @@
 from django.shortcuts import render
-from image.models import *
+#from image.models import *
+from .models import Image, Label, Probability, Userlabels
 from django.http import HttpResponse
 import datetime
 
@@ -9,7 +10,7 @@ def index(request):
     image = Image.objects.next_image()
     imagelabels = Probability.objects.get_image_labels(image)
     labels = Label.objects.all()
-    print(labels)
+
     context = {
         'image': image,
         'labels' : labels,
@@ -25,9 +26,9 @@ def login(request):
 
 def getSelectedLabels(request):
     print("in getSelectedLabels")
-    print(request.POST)
 
-    return render(request, 'proto/login.html')
+
+    return render(request, 'proto/main.html')
 
 def annotations(request):
     # Create the HttpResponse object with the appropriate CSV header.
