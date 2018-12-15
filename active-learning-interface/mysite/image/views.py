@@ -4,6 +4,7 @@ from .models import Image, Label, Probability, Userlabels
 from django.http import HttpResponse
 import datetime
 from django.contrib.auth.models import User
+from django.contrib.auth import authenticate,login, logout
 
 
 def index(request):
@@ -22,8 +23,29 @@ def index(request):
 def password(request):
     return render(request, 'proto/changePassword.html')
 
-def login(request):
+def logout_view(request):
+    logout(request)
+    return render(request, 'proto/logged_out.html')
+
+def showLogin(request):
     return render(request, 'proto/login.html')
+
+def checkLogin(request):
+    print("in login")
+    # TODO: change the username to allow more than 1 user
+    # username = request.POST['username']
+    print(request)
+    username = request.POST['username']
+    print("user", username)
+
+    password = request.POST['password']
+    print("password", password)
+    user = authenticate(request, username=username, password=password)
+    if user is not None:
+        login(request, user)
+        return render(request, 'proto/main.html')
+    else:
+        print("not success with login")
 
 def getSelectedLabels(request):
     print(request)

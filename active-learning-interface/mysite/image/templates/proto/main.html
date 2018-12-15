@@ -4,10 +4,6 @@
     {%  if user.is_authenticated %}
   <body onload="setLabels()">
 
-
-
-
-      <br/>
       <p>  Logged in as: </p>
       <p> {{user}} </p>
         <section class="is-pulled-left">
@@ -16,7 +12,7 @@
             </a>
         </section>
         <section class="is-pulled-right">
-            <a href="{% url 'logout'%}" class="icon-block">
+            <a href="{% url 'logout_view'%}" class="icon-block">
                 <i class="fas fa-sign-out-alt fa-3x" title="logout"></i>
             </a>
         </section>

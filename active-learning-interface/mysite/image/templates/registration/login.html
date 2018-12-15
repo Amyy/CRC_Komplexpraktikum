@@ -1,24 +1,32 @@
+{%  extends 'proto/base.html' %}
 {% block content %}
 
 {% if form.errors %}
   <p>Your username and password didn't match. Please try again.</p>
 {% endif %}
 
-{% if next %}
-  {% if user.is_authenticated %}
-    <p>Your account doesn't have access to this page. To proceed,
-    please login with an account that has access.</p>
-  {% else %}
-    <p>Please login to see this page.</p>
-  {% endif %}
-{% endif %}
+<section class="section">
+    <div class="columns is-centered">
+        <div class=" column is-half">
+            <div class="field">
+                <label class="label">login using the password</label>
+                    <form method="post" action="{% url 'login' %}">
+                        {% csrf_token %}
+                         <p>
+                            <input class="input" type="text" placeholder="username">
+                        </p>
+                        <p class="control has-icons-left">
+                            <input class="input is-danger" type="password" placeholder="password">
+                                <span class="icon is-small is-left">
+                                    <i class="fas fa-lock"></i>
+                                </span>
+                            <p class="help is-danger">Wrong password</p>
+                        </p>
 
-<form method="post" action="{% url 'login' %}">
-{% csrf_token %}
+
 <table>
 
 <tr>
-  <td>{{ form.username.label_tag }}</td>
   <td>{{ form.username }}</td>
 </tr>
 
@@ -34,5 +42,19 @@
 
 {# Assumes you setup the password_reset view in your URLconf #}
 <p><a href="{% url 'password_reset' %}">Lost password?</a></p>
+
+
+
+
+                </div>
+            </div>
+        </div>
+
+        <div class="level-item has-text-centered">
+            <button class="button is-link" onclick="location.href='{% url 'main' %}'">Submit</button>
+
+        </div>
+    </section>
+
 
 {% endblock %}
