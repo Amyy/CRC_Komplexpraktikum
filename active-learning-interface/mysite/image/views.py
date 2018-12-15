@@ -6,9 +6,7 @@ import datetime
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate,login, logout
 
-
-def index(request):
-    # on calling the page, get the next picture from the database
+def getPictureInformation():
     image = Image.objects.next_image()
     imagelabels = Probability.objects.get_image_labels(image)
     labels = Label.objects.all()
@@ -18,6 +16,11 @@ def index(request):
         'labels' : labels,
         'imageLabels' : imagelabels
     }
+    return context
+
+def index(request):
+    # on calling the page, get the next picture from the database
+    context = getPictureInformation()
     return render(request, 'proto/main.html', context)
 
 def password(request):
@@ -31,30 +34,28 @@ def showLogin(request):
     return render(request, 'proto/login.html')
 
 def checkLogin(request):
-    print("in login")
-    # TODO: change the username to allow more than 1 user
-    # username = request.POST['username']
-    print(request)
+
     username = request.POST['username']
     print("user", username)
-
     password = request.POST['password']
     print("password", password)
     user = authenticate(request, username=username, password=password)
     if user is not None:
         login(request, user)
-        return render(request, 'proto/main.html')
     else:
         print("not success with login")
+    context = getPictureInformation()
+    return render(request, 'proto/main.html', context)
 
 def getSelectedLabels(request):
-    print(request)
+    print("in getSelectedLabels")
     print("user ", request.user, request.user.id)
+    print("answer", request.POST)
     # get the checked checkboxes
     for answer in request.POST.getlist('answer'):
         print(answer)
     image = Image.objects.next_image()  # should get the current picture, as there are no labels set to the current one
-    user = User.objects.last() # TODO: needs to be set to the real user logged in, currently it's  just a sample user
+    user = request.user # TODO: needs to be set to the real user logged in, currently it's  just a sample user
     Userlabels.objects.set_userlabels_str(image, user, label_set= request.POST.getlist('answer'))
     # TODO: get the next picture and present it to the user
 
