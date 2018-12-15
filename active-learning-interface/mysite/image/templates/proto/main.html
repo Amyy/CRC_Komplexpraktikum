@@ -15,9 +15,14 @@
     <section class="hero is-info">
 
     <div class="hero-body">
-        <section class="is-pulled-right">
+        <section class="is-pulled-left">
             <a href="changePassword" class="icon-block">
-                <i class="fas fa-cog"></i>
+                <i class="fas fa-cog fa-2x" title="change password"></i>
+            </a>
+        </section>
+        <section class="is-pulled-right">
+            <a href="" class="icon-block">
+                <i class="fas fa-sign-out-alt fa-3x" title="logout"></i>
             </a>
         </section>
       <div class="level-item has-text-centered">
@@ -39,25 +44,35 @@
   <section class="section is-centered">
     <div class="level-item has-text-centered">
       Please select the tool that you can see in the picture and confirm your
-      selection by clicking the Submit button1
+      selection by clicking the Submit button
     </div>
   </section>
 
-    <div class="section is-centered">
-    <form action="getSelectedLabels" method="POST">
+    <div class="columns">
+        <div class="column is-half"></div>
+        <div class="column">
+            <form action="getSelectedLabels" method="POST">
 
-    {% csrf_token %}
-      <div class="container">
-          {% for label in labels %}
-              <div class="field">
-                <input id="{{ label }}" type="checkbox" name="{{ label }}" class="switch" checked="checked">
-                <label for="{{ label }}">{{ label }}</label>
+            {% csrf_token %}
+              <div class="container is-centered">
+                  {% for label in labels %}
+                      <div class="field">
+                        <input id="{{ label }}" type="checkbox" name="{{ label }}" class="switch">
+                        <label for="{{ label }}">{{ label }}</label>
+                      </div>
+                  {% endfor %}
+
+                <input type="submit" class="button is-link is-centered" value="OK">
               </div>
-          {% endfor %}
-
-        <input type="submit" class="button is-link is-centered" value="OK">
-      </div>
-    </form>
+            </form>
+        </div>
+    </div>
+    <div class="columns">
+        <div class="column is-two-fifths"></div>
+        <div class="column">
+                <input type="submit" class="button is-link is-centered" value="no tool visible">
+                <input type="submti" class="button is-link is-centered" value="I don't know">
+        </div>
     </div>
   <p id="demo"></p>
   </body>
@@ -65,7 +80,7 @@
         function setLabels() {
             // sets the labels determined by the ML Algorithm
             {% for imageLabel in imageLabels %}
-                document.getElementById("{{ imageLabel }}").checked = true
+                document.getElementById("{{ imageLabel }}").checked = true;
             {% endfor %}
         }
     </script>
