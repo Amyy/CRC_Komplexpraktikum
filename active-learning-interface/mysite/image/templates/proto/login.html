@@ -1,29 +1,15 @@
-{%  load static %}
+{%  extends 'proto/base.html' %}
+{%  block title %} Login {% endblock %}
+{% block content %}
 
-<html>
-  <head>
-    <meta charset="utf-8">
-    <title>change password</title>
-      <!-- meta tag needed for bulma -->
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link static href="{% static 'css/bulma-0.7.2/css/bulma.css' %}" rel="stylesheet">
-    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
 
-  </head>
-<body>
-    <section class="hero is-info">
-        <div class="hero-body">
-            <div class="level-item has-text-centered">
-                <h1 class="title">
-                    CRC GUI Prototype
-                </h1>
-            </div>
-        </div>
-    </section>
+
     <section class="section">
         <div class="columns is-centered">
             <div class=" column is-half">
                 <div class="field">
+
+
                     <label class="label">login using the password</label>
                     <p class="control has-icons-left">
                         <input class="input is-danger" type="password" placeholder="password">
@@ -41,5 +27,4 @@
 
         </div>
     </section>
-</body>
-</html>
+{% endblock %}
