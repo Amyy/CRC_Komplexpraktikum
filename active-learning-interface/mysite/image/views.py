@@ -3,6 +3,7 @@ from django.shortcuts import render
 from .models import Image, Label, Probability, Userlabels
 from django.http import HttpResponse
 import datetime
+from django.contrib.auth.models import User
 
 
 def index(request):
@@ -26,7 +27,14 @@ def login(request):
 
 def getSelectedLabels(request):
     print("in getSelectedLabels")
-
+    print(request)
+    # get the checked checkboxes
+    for answer in request.POST.getlist('answer'):
+        print(answer)
+    image = Image.objects.next_image()  # should get the current picture, as there are no labels set to the current one
+    user = User.objects.last() # TODO: needs to be set to the real user logged in, currently it's  just a sample user
+    Userlabels.objects.set_userlabels_str(image, user, label_set= request.POST.getlist('answer'))
+    # TODO: get the next picture and present it to the user
 
     return render(request, 'proto/main.html')
 

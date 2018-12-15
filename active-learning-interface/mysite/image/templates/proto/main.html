@@ -7,6 +7,7 @@
       <!-- meta tag needed for bulma -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link static href="{% static 'css/bulma-0.7.2/css/bulma.css' %}" rel="stylesheet">
+      <link static href="{%  static 'css/bulma-0.7.2/css/bulma-switch.min.css' %}" rel="stylesheet">
     <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
 
   </head>
@@ -20,14 +21,19 @@
       <p> {{user}} </p>
       <button style="height:30px;width:70px"><a href="{% url 'logout'%}">Logout</a></button>
     <div class="hero-body">
-        <section class="is-pulled-right">
+        <section class="is-pulled-left">
             <a href="changePassword" class="icon-block">
-                <i class="fas fa-cog"></i>
+                <i class="fas fa-cog fa-2x" title="change password"></i>
+            </a>
+        </section>
+        <section class="is-pulled-right">
+            <a href="" class="icon-block">
+                <i class="fas fa-sign-out-alt fa-3x" title="logout"></i>
             </a>
         </section>
       <div class="level-item has-text-centered">
         <h1 class="title">
-          CRC GUI Prototype
+          CRC GUI Prototype2
         </h1>
       </div>
 
@@ -47,53 +53,42 @@
       selection by clicking the Submit button
     </div>
   </section>
-    <!-- action="getSelectedLabels/{{image}}"  onsubmit="getUserLabels()" method="POST"-->
-    <form onsubmit="getUserLabels()"  >
-    {% csrf_token %}
-      <div class="container">
-          {% for label in labels %}
-        <div class="level-item has-text-centered">
-          <label class="checkbox">
-            <input type="checkbox" name="answer" id="{{ label }}">
-            {{ label }}
-          </label>
+
+    <div class="columns">
+        <div class="column is-half"></div>
+        <div class="column">
+            <form action="getSelectedLabels" method="POST">
+
+            {% csrf_token %}
+              <div class="container is-centered">
+                  {% for label in labels %}
+                      <div class="field">
+                        <input id="{{ label }}" type="checkbox" name="{{ label }}" class="switch">
+                        <label for="{{ label }}">{{ label }}</label>
+                      </div>
+                  {% endfor %}
+
+                <input type="submit" class="button is-link is-centered" value="OK">
+              </div>
+            </form>
         </div>
-          {% endfor %}
-
-        <input type="submit" class="button is-link is-centered" value="OK">
-      </div>
-    </form>
-
+    </div>
+    <div class="columns">
+        <div class="column is-two-fifths"></div>
+        <div class="column">
+                <input type="submit" class="button is-link is-centered" value="no tool visible">
+                <input type="submti" class="button is-link is-centered" value="I don't know">
+        </div>
+    </div>
   <p id="demo"></p>
   </body>
     <script type="text/javascript">
         function setLabels() {
             // sets the labels determined by the ML Algorithm
             {% for imageLabel in imageLabels %}
-                document.getElementById("{{ imageLabel }}").checked = true
+                document.getElementById("{{ imageLabel }}").checked = true;
             {% endfor %}
 
         }
-
-        function sendLabels() {
-            var checkboxes = document.getElementsByName("answer")
-            var userLabels = []
-            for (var i = 0; i < checkboxes.length; i++){
-                if (checkboxes[i].checked){
-                    userLabels.push(checkboxes[i].id)
-                }
-            }
-            document.getElementById("demo").innerHTML = userLabels
-            console.log(userLabels)
-            // TODO: hierfür muss sicher noch der entsprechende User übergebn werden
-            // wenn es zu dem Aufruf kommt, dann mal in der entsprechenden Pythonfunktion
-            // eine Ausgabe so gestalten, dass sie mal den Input angibt
-            // danach mal schauen, was das Bild für Labels aufweist
-            //{ Userlabels.objects.set_userlabels(image, user, userLabels) }
-
-        }
-
-
-
     </script>
 </html>
