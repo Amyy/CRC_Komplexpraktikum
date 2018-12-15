@@ -11,11 +11,15 @@ urlpatterns = [
     # change password
     # accessed via http://localhost:8000/prototype/password
     path('changePassword', views.password, name='changePassword'),
-    # created a function in the view, so that the selected labels can get saved
-    path('getSelectedLabels', views.getSelectedLabels, name='getSelectedLabels'),
+    url(r'^ajax/getSelectedLabels/$', views.getSelectedLabels, name='getSelectedLabels'),
+    #path('getSelectedLabels/<str:image>', views.getSelectedLabels, name='getSelectedLabels'),
     # get annotations csv file
     path('annotations', views.annotations, name='annotations'),
-    path('upload', views.upload_probabilities)
+    # upload variance from NN
+    path('upload', views.upload_probabilities),
+    # download csv file for specified opset, op
+    path('csv/<int:opset>/<int:op>/', views.download_csv)
+
 
 ]
 

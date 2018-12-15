@@ -1,5 +1,6 @@
 from django.shortcuts import render
-from image.models import *
+#from image.models import *
+from .models import Image, Label, Probability, Userlabels
 from django.http import HttpResponse
 import datetime
 from django.contrib.auth.models import User
@@ -10,7 +11,7 @@ def index(request):
     image = Image.objects.next_image()
     imagelabels = Probability.objects.get_image_labels(image)
     labels = Label.objects.all()
-    print(labels)
+
     context = {
         'image': image,
         'labels' : labels,
@@ -34,7 +35,8 @@ def getSelectedLabels(request):
     user = User.objects.last() # TODO: needs to be set to the real user logged in, currently it's  just a sample user
     Userlabels.objects.set_userlabels_str(image, user, label_set= request.POST.getlist('answer'))
     # TODO: get the next picture and present it to the user
-    return render(request, 'proto/login.html')
+
+    return render(request, 'proto/main.html')
 
 def annotations(request):
     # Create the HttpResponse object with the appropriate CSV header.
@@ -42,6 +44,13 @@ def annotations(request):
     response['Content-Disposition'] = 'attachment; filename="annotations'+ datetime.datetime.now().strftime("%y-%m-%d-%H-%M")+'.csv"'
     Userlabels.objects.write_csv(response)
     return response
+
+def download_csv(request, opset, op):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="annotations-'+str(opset)+'-'+str(op)+'.csv"'
+    Userlabels.objects.generate_csv(response, opset, op)
+    return response
+
 
 def upload_probabilities(request):
     if request.method == 'POST':

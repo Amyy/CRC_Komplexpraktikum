@@ -12,8 +12,14 @@
 
   </head>
   <body onload="setLabels()">
+
+
     <section class="hero is-info">
 
+      <br/>
+      <p>  Logged in as: </p>
+      <p> {{user}} </p>
+      <button style="height:30px;width:70px"><a href="{% url 'logout'%}">Logout</a></button>
     <div class="hero-body">
         <section class="is-pulled-left">
             <a href="changePassword" class="icon-block">
@@ -82,6 +88,7 @@
             {% for imageLabel in imageLabels %}
                 document.getElementById("{{ imageLabel }}").checked = true;
             {% endfor %}
+
         }
     </script>
 </html>
