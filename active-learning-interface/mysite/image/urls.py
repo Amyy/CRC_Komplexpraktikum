@@ -11,7 +11,7 @@ urlpatterns = [
     # change password
     # accessed via http://localhost:8000/prototype/password
     path('changePassword', views.password, name='changePassword'),
-    url(r'^ajax/getSelectedLabels/$', views.getSelectedLabels, name='getSelectedLabels'),
+    path('getSelectedLabels', views.getSelectedLabels, name="getSelectedLabels"),
     #path('getSelectedLabels/<str:image>', views.getSelectedLabels, name='getSelectedLabels'),
     # get annotations csv file
     path('annotations', views.annotations, name='annotations'),

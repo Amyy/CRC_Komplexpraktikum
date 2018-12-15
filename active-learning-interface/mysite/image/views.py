@@ -26,8 +26,8 @@ def login(request):
     return render(request, 'proto/login.html')
 
 def getSelectedLabels(request):
-    print("in getSelectedLabels")
     print(request)
+    print("user ", request.user, request.user.id)
     # get the checked checkboxes
     for answer in request.POST.getlist('answer'):
         print(answer)
