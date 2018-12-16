@@ -202,7 +202,7 @@ class Probability(models.Model):
     THRESHOLD = 0.5
     image = models.ForeignKey(Image, on_delete=models.CASCADE)
     label = models.ForeignKey(Label, on_delete=models.CASCADE)
-    value = models.FloatField()
+    value = models.BooleanField()
 
     objects = probability_manager()
 
