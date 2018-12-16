@@ -48,7 +48,7 @@ class probability_manager(models.Manager):
 
         thr_labels = []
         for prob in im_prob:
-            if prob.value > Probability.THRESHOLD:
+            if prob.value:
                 thr_labels.append(prob.label)
         return thr_labels
 
@@ -68,9 +68,12 @@ class probability_manager(models.Manager):
                 probabilities = []
                 path = row[0]
                 for i in range(1,8):
-                    probabilities.append(float(row[i]))
+                    probabilities.append(int(row[i]))
+                variance = float(row[8])
                 image = Image.objects.get_image(path=path)
                 self.set_probabilities(image=image, probabilities=probabilities)
+                image.variance = variance
+                image.save()
 
 
 
@@ -143,9 +146,11 @@ class userlabels_mangager(models.Manager):
             #if no userlabels exist
             #calculate NN prediction
             else:
+                prob_labels = Probability.objects.get_image_labels(image)
                 for label in labels:
-                    label_name = label.__str__()
                     label_string = '0'
+                    if prob_labels.__contains__(label):
+                        label_string = '1'
                     write_labels.append(label_string)
 
             #print([name] + write_labels)
