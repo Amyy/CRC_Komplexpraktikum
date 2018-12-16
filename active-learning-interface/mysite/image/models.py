@@ -172,7 +172,10 @@ class Image(models.Model):
     def __str__(self):
         return self.name
 
-
+    def description(self):
+        descr = ''
+        descr += str(self.name)
+        return descr
 
 class Label(models.Model):
     name = models.CharField(max_length=50)
