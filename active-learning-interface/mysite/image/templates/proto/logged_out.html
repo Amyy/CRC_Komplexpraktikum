@@ -1,4 +1,10 @@
+{%  extends 'proto/base.html' %}
 {% block content %}
-  <p>Logged out!</p>
-  <a href="{% url 'login'%}">Click here to login again.</a>
+    <div class="columns">
+        <div class="column is-two-fifths"></div>
+        <div class="column">
+            <p> Logged out </p>
+            <a href="{% url 'login'%}">Go to login</a>
+        </div>
+    </div>
 {% endblock %}

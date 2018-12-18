@@ -6,33 +6,30 @@
 
       <p>  Logged in as: </p>
       <p> {{user}} </p>
-        <section class="is-pulled-left">
-            <a href="changePassword" class="icon-block">
-                <i class="fas fa-cog fa-2x" title="change password"></i>
-            </a>
-        </section>
-        <section class="is-pulled-right">
-            <a href="{% url 'logout_view'%}" class="icon-block">
-                <i class="fas fa-sign-out-alt fa-3x" title="logout"></i>
-            </a>
-        </section>
-  <section class="section">
-    <div class="container">
-      <figure class="image is-3by2" >
-        <img src="{{ image.data.url }}">
-      </figure>
-    </div>
-  </section>
-  <section class="section is-centered">
-    <div class="level-item has-text-centered">
-      Please select the tool that you can see in the picture and confirm your
-      selection by clicking the Submit button
-    </div>
-  </section>
+        <div class="columns">
+            <div class="column is-two-fifths"></div>
+            <div class="column">
+                              <section class="section">
+                <div class="container">
+                    <figure class="image is-256by256" >
+                        <img src="{{ image.data.url }}">
+                    </figure>
+                </div>
+              </section>
+
+            </div>
+
+        </div>
 
     <div class="columns">
-        <div class="column is-half"></div>
-        <div class="column">
+        <div class="column is-two-fifths"></div>
+        <div class="column is-two-fifths">
+          <section class="section">
+            <div class="level-item">
+              Please select the tool that you can see in the picture and confirm your
+              selection by clicking the Submit button
+            </div>
+          </section>
             <form action="getSelectedLabels" method="POST">
 
             {% csrf_token %}
@@ -53,13 +50,14 @@
                 </div>
               </div>
             </form>
+        <input type="submit" class="button is-link is-centered" value="no tool visible">
+        <input type="submit" class="button is-link is-centered" value="I don't know">
         </div>
     </div>
     <div class="columns">
         <div class="column is-two-fifths"></div>
         <div class="column">
-                <input type="submit" class="button is-link is-centered" value="no tool visible">
-                <input type="submti" class="button is-link is-centered" value="I don't know">
+
         </div>
     </div>
   <p id="demo"></p>
@@ -68,7 +66,7 @@
             <div class="column is-two-fifths"></div>
             <div class="column">
                     <p> You're not logged in! </p>
-                    <a href="/image">Go to login</a>
+                    <a href="{% url 'login'%}">Go to login</a>
             </div>
         </div>
 
