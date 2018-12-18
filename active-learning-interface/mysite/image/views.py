@@ -4,10 +4,9 @@ from .models import Image, Label, Probability, Userlabels
 from django.http import HttpResponse
 import datetime
 from django.contrib.auth.models import User
+from django.contrib.auth import authenticate,login, logout
 
-
-def index(request):
-    # on calling the page, get the next picture from the database
+def getPictureInformation():
     image = Image.objects.next_image()
     imagelabels = Probability.objects.get_image_labels(image)
     labels = Label.objects.all()
@@ -17,26 +16,48 @@ def index(request):
         'labels' : labels,
         'imageLabels' : imagelabels
     }
+    return context
+
+def index(request):
+    # on calling the page, get the next picture from the database
+    context = getPictureInformation()
     return render(request, 'proto/main.html', context)
 
 def password(request):
     return render(request, 'proto/changePassword.html')
 
-def login(request):
+def logout_view(request):
+    logout(request)
+    return render(request, 'proto/logged_out.html')
+
+def showLogin(request):
     return render(request, 'proto/login.html')
 
+def checkLogin(request):
+
+    username = request.POST['username']
+    print("user", username)
+    password = request.POST['password']
+    print("password", password)
+    user = authenticate(request, username=username, password=password)
+    if user is not None:
+        login(request, user)
+    else:
+        print("not success with login")
+    context = getPictureInformation()
+    return render(request, 'proto/main.html', context)
+
 def getSelectedLabels(request):
-    print("in getSelectedLabels")
-    print(request)
+
     # get the checked checkboxes
     for answer in request.POST.getlist('answer'):
         print(answer)
     image = Image.objects.next_image()  # should get the current picture, as there are no labels set to the current one
-    user = request.user;
+    user = request.user
     Userlabels.objects.set_userlabels_str(image, user, label_set= request.POST.getlist('answer'))
     # TODO: get the next picture and present it to the user
-
-    return render(request, 'proto/main.html')
+    context = getPictureInformation()
+    return render(request, 'proto/main.html', context)
 
 def annotations(request):
     # Create the HttpResponse object with the appropriate CSV header.

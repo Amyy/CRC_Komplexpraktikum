@@ -13,7 +13,7 @@ class image_manager(models.Manager):
         image.save()
 
     def next_image(self):
-        return self.order_by('variance', '-count_userlabels').last()
+        return self.order_by('variance', '-count_userlabels').first()
 
     def get_image(self, opset=0, op=0, number=0, path=False):
         #Eigenschaften aus Pfad extrahieren

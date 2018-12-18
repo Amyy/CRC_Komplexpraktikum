@@ -7,7 +7,9 @@ urlpatterns = [
     # accessed via http://localhost:8000/prototype/main
     path('main', views.index, name='main'),
     # login page -> accessed via http://localhost:8000/prototype/
-    path('', views.login, name='login'),
+    path('', views.showLogin, name='login'),
+    path('checkLogin', views.checkLogin, name="checkLogin"),
+    path('logout_view', views.logout_view, name="logout_view"),
     # change password
     # accessed via http://localhost:8000/prototype/password
     path('changePassword', views.password, name='changePassword'),

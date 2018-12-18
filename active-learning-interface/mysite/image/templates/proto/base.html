@@ -1,0 +1,50 @@
+{%  load static %}
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>{% block title %}Main page {% endblock %}</title>
+      <!-- meta tag needed for bulma -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link static href="{% static 'css/bulma-0.7.2/css/bulma.css' %}" rel="stylesheet">
+    <link static href="{%  static 'css/bulma-0.7.2/css/bulma-switch.min.css' %}" rel="stylesheet">
+    <link static href="{%  static 'css/myStyle.css' %}" rel="stylesheet">
+    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+
+  </head>
+<body>
+    <section class="hero is-info">
+        <div class="hero-body">
+
+            <div class="level-item has-text-centered">
+                <h1 class="title">
+                    CRC GUI Prototype
+                </h1>
+            </div>
+            {% if request.path == "/image/getSelectedLabels" or request.path == "/image/checkLogin" or request.path == "/image/main" %}
+                <section class="is-pulled-left">
+                    <a href="changePassword" class="icon-block">
+                        <i class="fas fa-cog fa-2x" title="change password"></i>
+                    </a>
+                </section>
+                <section class="is-pulled-right">
+                    <a href="{% url 'logout_view'%}" class="icon-block">
+                        <i class="fas fa-sign-out-alt fa-3x" title="logout"></i>
+                    </a>
+                </section>
+            {% endif %}
+        </div>
+    </section>
+    {%  block content %}
+    {%  endblock %}
+</body>
+    <script type="text/javascript">
+        function setLabels() {
+            // sets the labels determined by the ML Algorithm
+            {% for imageLabel in imageLabels %}
+                document.getElementById("{{ imageLabel }}").checked = true;
+            {% endfor %}
+
+        }
+    </script>
+</html>
