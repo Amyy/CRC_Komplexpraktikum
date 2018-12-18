@@ -12,7 +12,10 @@ class image_manager(models.Manager):
         image.label_set.set(label_set)
         image.save()
 
-    def next_image(self):
+    def next_image(self, image, user):
+        return self.order_by('variance', '-count_userlabels').first()
+
+    def previous_image(self, image, user):
         return self.order_by('variance', '-count_userlabels').first()
 
     def get_image(self, opset=0, op=0, number=0, path=False):
@@ -188,6 +191,7 @@ class Userlabels(models.Model):
     image = models.ForeignKey(Image, on_delete=models.CASCADE)
     author = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     label = models.ManyToManyField(Label)
+    timestamp = models.DateTimeField(auto_now_add=True)
     objects = userlabels_mangager()
 
     def __str__(self):
