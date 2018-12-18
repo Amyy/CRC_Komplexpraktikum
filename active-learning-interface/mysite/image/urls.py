@@ -15,6 +15,7 @@ urlpatterns = [
     path('changePassword', views.password, name='changePassword'),
     #path('getSelectedLabels/<str:image>', views.getSelectedLabels, name='getSelectedLabels'),
     path('getSelectedLabels', views.getSelectedLabels, name='getSelectedLabels'),
+    path('goToPreviousImage', views.goToPreviousImage, name='goToPreviousImage'),
     # get annotations csv file
     path('annotations', views.annotations, name='annotations'),
     # upload variance from NN

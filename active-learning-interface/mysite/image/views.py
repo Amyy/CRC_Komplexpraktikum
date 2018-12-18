@@ -17,6 +17,18 @@ def getPictureInformation():
         'imageLabels' : imagelabels
     }
     return context
+# die Funktion soll man aufrufen wenn man zurück zum previous image geht
+def getPreviousPictureInformation(image):
+    imagelabels = Probability.objects.get_image_labels(image)
+    labels = Label.objects.all()
+
+    context = {
+        'image': image,
+        'labels': labels,
+        'imageLabels': imagelabels
+    }
+    return context
+
 
 def index(request):
     # on calling the page, get the next picture from the database
@@ -56,7 +68,19 @@ def getSelectedLabels(request):
     user = request.user
     Userlabels.objects.set_userlabels_str(image, user, label_set= request.POST.getlist('answer'))
     # TODO: get the next picture and present it to the user
+
+    #image =  Image.objects.next_image() mislam voa ne e potrebno, zs se povikuva vo getPictureInformation
     context = getPictureInformation()
+
+    return render(request, 'proto/main.html', context)
+
+def goToPreviousImage(request):
+
+    print(" Go to previous image ")
+    image = Image.objects.next_image()
+    previous_image = Image.objects.previous_image(image, request.user)
+    context = getPreviousPictureInformation(previous_image)
+
     return render(request, 'proto/main.html', context)
 
 def annotations(request):
