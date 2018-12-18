@@ -32,7 +32,7 @@ def getSelectedLabels(request):
     for answer in request.POST.getlist('answer'):
         print(answer)
     image = Image.objects.next_image()  # should get the current picture, as there are no labels set to the current one
-    user = User.objects.last() # TODO: needs to be set to the real user logged in, currently it's  just a sample user
+    user = request.user;
     Userlabels.objects.set_userlabels_str(image, user, label_set= request.POST.getlist('answer'))
     # TODO: get the next picture and present it to the user
 
