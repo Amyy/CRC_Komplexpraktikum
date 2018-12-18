@@ -48,18 +48,16 @@ def checkLogin(request):
     return render(request, 'proto/main.html', context)
 
 def getSelectedLabels(request):
-    print("in getSelectedLabels")
-    print("user ", request.user, request.user.id)
-    print("answer", request.POST)
+
     # get the checked checkboxes
     for answer in request.POST.getlist('answer'):
         print(answer)
     image = Image.objects.next_image()  # should get the current picture, as there are no labels set to the current one
-    user = request.user # TODO: needs to be set to the real user logged in, currently it's  just a sample user
+    user = request.user
     Userlabels.objects.set_userlabels_str(image, user, label_set= request.POST.getlist('answer'))
     # TODO: get the next picture and present it to the user
-
-    return render(request, 'proto/main.html')
+    context = getPictureInformation()
+    return render(request, 'proto/main.html', context)
 
 def annotations(request):
     # Create the HttpResponse object with the appropriate CSV header.

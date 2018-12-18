@@ -37,6 +37,7 @@
 
             {% csrf_token %}
               <div class="container is-centered">
+                <div class="field">
                   {% for label in labels %}
                       <div>
                         <label class="checkbox">
@@ -46,8 +47,10 @@
                       </div>
                       
                   {% endfor %}
-
-                <input type="submit" class="button is-link is-centered" value="OK">
+                </div>
+                <div class="field">
+                    <input type="submit" class="button is-link is-centered" value="OK">
+                </div>
               </div>
             </form>
         </div>
@@ -61,7 +64,14 @@
     </div>
   <p id="demo"></p>
     {% else %}
-        <p> You're not logged in! <p>
+        <div class="columns">
+            <div class="column is-two-fifths"></div>
+            <div class="column">
+                    <p> You're not logged in! </p>
+                    <a href="/image">Go to login</a>
+            </div>
+        </div>
+
     {%  endif %}
   {% endblock %}
 
