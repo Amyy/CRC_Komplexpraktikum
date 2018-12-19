@@ -7,8 +7,9 @@ from django.contrib.auth import authenticate, login, logout, update_session_auth
 from django.contrib.auth.hashers import check_password
 
 
-def getPictureInformation():
-    image = Image.objects.next_image()
+def getPictureInformation(user, image=""):
+    if image =="":
+        image = Image.objects.next_image(user)
     imagelabels = Probability.objects.get_image_labels(image)
     labels = Label.objects.all()
     description = image.description()
@@ -19,23 +20,25 @@ def getPictureInformation():
         'description': description
     }
     return context
+
 # die Funktion soll man aufrufen wenn man zurück zum previous image geht
+# TODO: sieht nicht so aus, als ob die Funktion etwas macht, das nicht in getPictureInformation passoert
 def getPreviousPictureInformation(image):
     imagelabels = Probability.objects.get_image_labels(image)
     labels = Label.objects.all()
-
+    description = image.description()
     context = {
         'image': image,
         'labels': labels,
-        'imageLabels': imagelabels
+        'imageLabels': imagelabels,
+        'description': description
     }
     return context
 
 
-
 def index(request):
     # on calling the page, get the next picture from the database
-    context = getPictureInformation()
+    context = getPictureInformation(request.user)
     return render(request, 'proto/main.html', context)
 
 
@@ -100,7 +103,7 @@ def checkLogin(request):
 
     if user is not None:
         login(request, user)
-        context = getPictureInformation()
+        context = getPictureInformation(user)
         return render(request, 'proto/main.html', context)
     else:
         print("not success with login")
@@ -113,19 +116,19 @@ def checkLogin(request):
 
 def setLabels(request, answers):
     user = request.user
-    image = Image.objects.next_image()  # should get the current picture, as there are no labels set to the current one
+    image = Image.objects.next_image(user)  # should get the current picture, as there are no labels set to the current one
     Userlabels.objects.set_userlabels_str(image, user, answers)
 
 
 def noIdea(request):
     print("in no idea")
-    return render(request, 'proto/main.html', context=getPictureInformation())
+    return render(request, 'proto/main.html', context=getPictureInformation(request.user))
 
 
 def noToolVisible(request):
     print("no tool visible")
     setLabels(request, answers="")
-    context = getPictureInformation()
+    context = getPictureInformation(request.user)
     return render(request, 'proto/main.html', context)
 
 
@@ -137,14 +140,14 @@ def getSelectedLabels(request):
     # TODO: get the next picture and present it to the user
 
     #image =  Image.objects.next_image() mislam voa ne e potrebno, zs se povikuva vo getPictureInformation
-    context = getPictureInformation()
+    context = getPictureInformation(request.user)
 
     return render(request, 'proto/main.html', context)
 
 def goToPreviousImage(request):
 
     print(" Go to previous image ")
-    image = Image.objects.next_image()
+    image = Image.objects.next_image(request.user)
     previous_image = Image.objects.previous_image(image, request.user)
     context = getPreviousPictureInformation(previous_image)
 

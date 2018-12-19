@@ -12,7 +12,7 @@ class image_manager(models.Manager):
         image.label_set.set(label_set)
         image.save()
 
-    def next_image(self, image, user):
+    def next_image(self, user):
         return self.order_by('variance', '-count_userlabels').first()
 
     def previous_image(self, image, user):
