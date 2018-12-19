@@ -12,6 +12,7 @@ urlpatterns = [
     path('logout_view', views.logout_view, name="logout_view"),
     # change password
     # accessed via http://localhost:8000/prototype/password
+    path('showChangePassword', views.showChangePassword, name="showChangePassword"),
     path('changePassword', views.changePassword, name='changePassword'),
     path('getSelectedLabels', views.getSelectedLabels, name='getSelectedLabels'),
     path('noTools', views.noToolVisible, name='noTools'),

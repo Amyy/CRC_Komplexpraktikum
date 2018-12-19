@@ -1,4 +1,4 @@
-{%  load static %}
+{% load static %}
 
 <html>
 <head>
@@ -7,12 +7,13 @@
     <!-- meta tag needed for bulma -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link static href="{% static 'css/bulma-0.7.2/css/bulma.css' %}" rel="stylesheet">
-    <link static href="{%  static 'css/bulma-0.7.2/css/bulma-switch.min.css' %}" rel="stylesheet">
-    <link static href="{%  static 'css/myStyle.css' %}" rel="stylesheet">
+    <link static href="{% static 'css/bulma-0.7.2/css/bulma-switch.min.css' %}" rel="stylesheet">
+    <link static href="{% static 'css/myStyle.css' %}" rel="stylesheet">
     <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
 
 </head>
-<body>
+<body {% if request.path == "/image/changePassword" %} onload="setMessage()" {% endif %}
+        {% if request.path == "/image/checkLogin" %} onload="showLoginError()" {% endif %}>
 <section class="hero is-info">
     <div class="hero-body">
         <div class="level-item has-text-centered">
@@ -22,20 +23,20 @@
         </div>
         {% if request.path != "/image/" and request.path != "/image/logout_view" and user.is_authenticated %}
             <section class="is-pulled-left">
-                <a href="changePassword" class="icon-block">
+                <a href="showChangePassword" class="icon-block">
                     <i class="fas fa-cog fa-2x" title="change password"></i>
                 </a>
             </section>
             <section class="is-pulled-right">
-                <a href="{% url 'logout_view'%}" class="icon-block">
+                <a href="{% url 'logout_view' %}" class="icon-block">
                     <i class="fas fa-sign-out-alt fa-3x" title="logout"></i>
                 </a>
             </section>
         {% endif %}
     </div>
 </section>
-{%  block content %}
-{%  endblock %}
+{% block content %}
+{% endblock %}
 </body>
 <script type="text/javascript">
     function setLabels() {
@@ -45,8 +46,43 @@
         {% endfor %}
 
     }
-    function test(){
-        console.log("test")
+
+    function setMessage() {
+        receivedMessage = "{{message}}"
+        if (receivedMessage == "wrongOldPassword") {
+            console.log("wrongOld")
+            document.getElementById("oldPassword").classList.add("is-danger")
+            document.getElementById("oldPasswordError").innerHTML = "wrong password"
+        }
+        else if (receivedMessage == "passwordNoMatch") {
+            document.getElementById("newPassword").classList.add("is-danger")
+            document.getElementById("confirmNew").classList.add("is-danger")
+            document.getElementById("passwordConfirm").innerHTML = "passwords don't match"
+        }
+        else if (receivedMessage == "empty") {
+            alert("Please fill out every field!")
+        }
+    }
+
+    function checkPasswords() {
+        newPassword = document.getElementById("newPassword")
+        confirmNew = document.getElementById("confirmNew")
+        newPassword.classList.remove("is-danger")
+        confirmNew.classList.remove("is-danger")
+        document.getElementById("passwordConfirm").innerHTML = ""
+        newVal = newPassword.value
+        confVal = confirmNew.value
+        if (newVal && confirmNew) {
+            if (newPassword.value != confirmNew.value) {
+                newPassword.classList.add("is-danger")
+                confirmNew.classList.add("is-danger")
+                document.getElementById("passwordConfirm").innerHTML = "Passwords don't match"
+            }
+        }
+    }
+
+    function showLoginError() {
+        document.getElementById("loginError").innerHTML = "{{ message }}"
     }
 
 
