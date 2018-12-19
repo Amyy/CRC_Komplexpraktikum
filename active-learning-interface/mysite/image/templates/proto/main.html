@@ -3,25 +3,23 @@
 {% block content %}
     {%  if user.is_authenticated %}
         <body onload="setLabels()">
-            <section class="section is-centered">
-                <div class="level-item has-image-centered">
-                    <figure class="image is-256by256" >
-                        <img src="{{ image.data.url }}">
-                    </figure>
-                </div>
-            </section>
-
-
+        <section class="section is-centered">
+            <div class="level-item has-image-centered">
+                <figure class="image is-256by256" >
+                    <img src="{{ image.data.url }}">
+                    <figcaption>description: {{ description }}</figcaption>
+                </figure>
+            </div>
+        </section>
         <div class="columns">
             <div class="column">
                 <section class="section">
-                    <div class="level-item has-text-centered">
-                        Please select the tool that you can see in the picture and confirm your
-                        selection by clicking the Submit button <br>
-                        {{ image.data.url }}
+                    <div class="field">
+                        <div class="level-item has-text-centered">
+                            Please select the tool that you can see in the picture and confirm your
+                            selection by clicking the Submit button
+                        </div>
                     </div>
-                </section>
-                <section class="section">
                     <div class="level-item has-text-centered">
                         <form action="getSelectedLabels" method="POST">
                             {% csrf_token %}

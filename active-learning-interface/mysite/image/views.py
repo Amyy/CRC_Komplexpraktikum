@@ -10,11 +10,12 @@ def getPictureInformation():
     image = Image.objects.next_image()
     imagelabels = Probability.objects.get_image_labels(image)
     labels = Label.objects.all()
-
+    description = image.description()
     context = {
         'image': image,
         'labels' : labels,
-        'imageLabels' : imagelabels
+        'imageLabels' : imagelabels,
+        'description' : description
     }
     return context
 
