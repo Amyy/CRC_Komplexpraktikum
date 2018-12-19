@@ -4,7 +4,9 @@ from .models import Image, Label, Probability, Userlabels
 from django.http import HttpResponse
 import datetime
 from django.contrib.auth.models import User
-from django.contrib.auth import authenticate,login, logout
+from django.contrib.auth import authenticate,login, logout, update_session_auth_hash
+from django.contrib.auth.hashers import check_password
+
 
 def getPictureInformation():
     image = Image.objects.next_image()
@@ -24,8 +26,37 @@ def index(request):
     context = getPictureInformation()
     return render(request, 'proto/main.html', context)
 
-def password(request):
-    return render(request, 'proto/changePassword.html')
+def changePassword(request):
+
+    # wenn nicht: Fehler zurück und Form setzt altes Passwort auf rot
+    # TODO: JS function, die beide neue passwörter vergleicht und Frabe anpasst
+    # kann das auch mittels context gemacht werden?
+    user = User.objects.get(username=request.user.username)
+    currentpassword = request.user.password
+    enteredcurrentpasword = request.POST.get('oldPassword')
+    matchcheck = check_password(enteredcurrentpasword, currentpassword)
+    if not matchcheck and enteredcurrentpasword:
+        context = {
+            "message" : "wrongOldPassword"
+        }
+        return render(request, 'proto/changePassword.html', context)
+    newPassword = request.POST.get('newPassword')
+    newPasswordCheck = request.POST.get('confirmNew')
+    if newPassword == newPasswordCheck and matchcheck:
+        user.set_password(newPassword)
+        user.save()
+        update_session_auth_hash(request, user)
+        return render(request, 'proto/changedPassword.html')
+    elif newPassword and newPasswordCheck:
+        context = {
+            'message' : 'passwordNoMatch'
+        }
+        return render(request, 'proto/changePassword.html', context)
+    else:
+        context = {
+            'message' : ''
+        }
+        return render(request, 'proto/changePassword.html', context)
 
 def logout_view(request):
     logout(request)
@@ -35,6 +66,7 @@ def showLogin(request):
     return render(request, 'proto/login.html')
 
 def checkLogin(request):
+    # TODO: Reaktion, wenn Nutzer falsches Passwort eingegeben hat
 
     username = request.POST['username']
     print("user", username)
