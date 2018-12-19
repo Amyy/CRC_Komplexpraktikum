@@ -2,87 +2,65 @@
 {%  block title %} Home {% endblock %}
 {% block content %}
     {%  if user.is_authenticated %}
-  <body onload="setLabels()">
-
-      <p>  Logged in as: </p>
-      <p> {{user}} </p>
+        <body onload="setLabels()">
+        <section class="section is-centered">
+            <div class="level-item has-image-centered">
+                <figure class="image is-256by256" >
+                    <img src="{{ image.data.url }}">
+                    <figcaption>description: {{ description }}</figcaption>
+                </figure>
+            </div>
+        </section>
         <div class="columns">
-            <div class="column is-two-fifths"></div>
             <div class="column">
-                              <section class="section">
-                <div class="container">
-                    <figure class="image is-256by256" >
-                        <img src="{{ image.data.url }}">
-                    </figure>
-                </div>
-              </section>
+                <section class="section">
+                    <div class="field">
+                        <div class="level-item has-text-centered">
+                            Please select the tool that you can see in the picture and confirm your
+                            selection by clicking the Submit button1
+                        </div>
+                    </div>
+                    <div class="level-item has-text-centered">
+                        <form action="getSelectedLabels" method="POST">
+                            {% csrf_token %}
+                            <div class="container">
+                                <div class="field">
+                                    {% for label in labels %}
+                                        <div class="field">
+                                            <label class="checkbox">
+                                                <input type="checkbox" name="answer" id="{{ label }}" value="{{ label }}">
+                                                <label for="{{ label }}">{{ label }}</label>
+                                            </label>
+                                        </div>
 
+                                    {% endfor %}
+                                </div>
+                                <div class="field">
+                                    <input type="submit" class="button is-link is-centered" value="OK">
+                                </div>
+                                <div class="field">
+                                    <input type="submit" class="button is-link is-centered" value="no tool visible" formaction="noTools">
+                                    <input type="submit" class="button is-link is-centered" value="I don't know" formaction="dontKnow">
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </section>
             </div>
-
         </div>
 
-    <div class="columns">
-        <div class="column is-two-fifths"></div>
-        <div class="column is-two-fifths">
-          <section class="section">
-            <div class="level-item">
-              Please select the tool that you can see in the picture and confirm your
-              selection by clicking the Submit button <br>
-                {{ image.data.url }}
-            </div>
-          </section>
-            <form action="getSelectedLabels" method="POST">
-
-            {% csrf_token %}
-              <div class="container is-centered">
-                <div class="field">
-                  {% for label in labels %}
-                      <div>
-                        <label class="checkbox">
-                            <input type="checkbox" name="answer" id="{{ label }}" value="{{ label }}">
-                            <label for="{{ label }}">{{ label }}</label>
-                        </label>
-                      </div>
-                      
-                  {% endfor %}
-                </div>
-                <div class="field">
-                    <input type="submit" class="button is-link is-centered" value="OK">
-                </div>
-              </div>
-            </form>
-
-             <form action="goToPreviousImage" method="GET">
-              <div class="container is-centered">
-                <div class="field">
-
-                </div>
-                <div class="field">
-                    <input type="submit" class="button is-link is-centered" value="Go back">
-                </div>
-              </div>
-            </form>
-        <input type="submit" class="button is-link is-centered" value="no tool visible">
-        <input type="submit" class="button is-link is-centered" value="I don't know">
-        </div>
-    </div>
-    <div class="columns">
-        <div class="column is-two-fifths"></div>
-        <div class="column">
-
-        </div>
-    </div>
-  <p id="demo"></p>
     {% else %}
         <div class="columns">
             <div class="column is-two-fifths"></div>
             <div class="column">
-                    <p> You're not logged in! </p>
-                    <a href="{% url 'login'%}">Go to login</a>
+                <p> You're not logged in! </p>
+                <a href="{% url 'login'%}">Go to login</a>
             </div>
         </div>
 
+
     {%  endif %}
-  {% endblock %}
+{% endblock %}
+
 
 

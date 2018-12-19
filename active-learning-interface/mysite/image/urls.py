@@ -12,10 +12,12 @@ urlpatterns = [
     path('logout_view', views.logout_view, name="logout_view"),
     # change password
     # accessed via http://localhost:8000/prototype/password
-    path('changePassword', views.password, name='changePassword'),
-    #path('getSelectedLabels/<str:image>', views.getSelectedLabels, name='getSelectedLabels'),
+    path('showChangePassword', views.showChangePassword, name="showChangePassword"),
+    path('changePassword', views.changePassword, name='changePassword'),
     path('getSelectedLabels', views.getSelectedLabels, name='getSelectedLabels'),
     path('goToPreviousImage', views.goToPreviousImage, name='goToPreviousImage'),
+    path('noTools', views.noToolVisible, name='noTools'),
+    path('dontKnow', views.noIdea, name="noIdea"),
     # get annotations csv file
     path('annotations', views.annotations, name='annotations'),
     # upload variance from NN
