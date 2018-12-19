@@ -17,7 +17,7 @@
                     <div class="field">
                         <div class="level-item has-text-centered">
                             Please select the tool that you can see in the picture and confirm your
-                            selection by clicking the Submit button
+                            selection by clicking the Submit button1
                         </div>
                     </div>
                     <div class="level-item has-text-centered">
@@ -39,8 +39,8 @@
                                     <input type="submit" class="button is-link is-centered" value="OK">
                                 </div>
                                 <div class="field">
-                                    <input type="submit" class="button is-link is-centered" value="no tool visible">
-                                    <input type="submit" class="button is-link is-centered" value="I don't know">
+                                    <input type="submit" class="button is-link is-centered" value="no tool visible" formaction="noTools">
+                                    <input type="submit" class="button is-link is-centered" value="I don't know" formaction="dontKnow">
                                 </div>
                             </div>
                         </form>
@@ -61,5 +61,6 @@
 
     {%  endif %}
 {% endblock %}
+
 
 

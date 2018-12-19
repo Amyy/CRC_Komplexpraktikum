@@ -13,8 +13,9 @@ urlpatterns = [
     # change password
     # accessed via http://localhost:8000/prototype/password
     path('changePassword', views.password, name='changePassword'),
-    #path('getSelectedLabels/<str:image>', views.getSelectedLabels, name='getSelectedLabels'),
     path('getSelectedLabels', views.getSelectedLabels, name='getSelectedLabels'),
+    path('noTools', views.noToolVisible, name='noTools'),
+    path('dontKnow', views.noIdea, name="noIdea"),
     # get annotations csv file
     path('annotations', views.annotations, name='annotations'),
     # upload variance from NN

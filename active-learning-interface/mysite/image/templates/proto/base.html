@@ -17,10 +17,10 @@
         <div class="hero-body">
             <div class="level-item has-text-centered">
                 <h1 class="title">
-                    CRC GUI Prototype
+                    CRC GUI Prototype1
                 </h1>
             </div>
-            {% if request.path == "/image/getSelectedLabels" or request.path == "/image/checkLogin" or request.path == "/image/main" %}
+            {% if request.path != "/image/" and request.path != "/image/logout_view"  %}
                 <section class="is-pulled-left">
                     <a href="changePassword" class="icon-block">
                         <i class="fas fa-cog fa-2x" title="change password"></i>
@@ -45,5 +45,10 @@
             {% endfor %}
 
         }
+    function test(){
+        console.log("test")
+    }
+
+
     </script>
 </html>

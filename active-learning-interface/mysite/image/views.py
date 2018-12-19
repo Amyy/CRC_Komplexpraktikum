@@ -48,14 +48,27 @@ def checkLogin(request):
     context = getPictureInformation()
     return render(request, 'proto/main.html', context)
 
-def getSelectedLabels(request):
+def setLabels(request, answers):
+    user = request.user
+    image = Image.objects.next_image() # should get the current picture, as there are no labels set to the current one
+    Userlabels.objects.set_userlabels_str(image, user, answers)
 
+def noIdea(request):
+    print("in no idea")
+    return render(request, 'proto/main.html', context=getPictureInformation())
+
+
+def noToolVisible(request):
+    print("no tool visible")
+    setLabels(request, answers="")
+    context = getPictureInformation()
+    return render(request, 'proto/main.html', context)
+
+def getSelectedLabels(request):
     # get the checked checkboxes
     for answer in request.POST.getlist('answer'):
         print(answer)
-    image = Image.objects.next_image()  # should get the current picture, as there are no labels set to the current one
-    user = request.user
-    Userlabels.objects.set_userlabels_str(image, user, label_set= request.POST.getlist('answer'))
+    setLabels(request, answers=request.POST.getlist('answer'))
     # TODO: get the next picture and present it to the user
     context = getPictureInformation()
     return render(request, 'proto/main.html', context)
