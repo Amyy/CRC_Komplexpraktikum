@@ -49,6 +49,10 @@ oder mit label_set als Liste von Strings
 [source,python]
 Userlabels.objects.set_userlabels_str(image, user, label_set)
 
+bestimmte Anzahl von zuletzt gelabelten Bildern holen (default 20)
+[source,python]
+get_labeled_images(user, amount)
+
 
 === NN Manager
 
