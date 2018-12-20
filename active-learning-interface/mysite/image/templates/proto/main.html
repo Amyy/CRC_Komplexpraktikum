@@ -1,11 +1,12 @@
-{%  extends 'proto/base.html' %}
-{%  block title %} Home {% endblock %}
+{% extends 'proto/base.html' %}
+{% block title %} Home {% endblock %}
 {% block content %}
-    {%  if user.is_authenticated %}
+    {% if user.is_authenticated %}
         <body onload="setLabels()">
         <section class="section is-centered">
+
             <div class="level-item has-image-centered">
-                <figure class="image is-256by256" >
+                <figure class="image is-256by256">
                     <img src="{{ image.data.url }}">
                     <figcaption>description: {{ description }}</figcaption>
                 </figure>
@@ -14,12 +15,7 @@
         <div class="columns">
             <div class="column">
                 <section class="section">
-                    <div class="field">
-                        <div class="level-item has-text-centered">
-                            Please select the tool that you can see in the picture and confirm your
-                            selection by clicking the Submit button1
-                        </div>
-                    </div>
+
                     <div class="level-item has-text-centered">
                         <form action="getSelectedLabels" method="POST">
                             {% csrf_token %}
@@ -28,7 +24,8 @@
                                     {% for label in labels %}
                                         <div class="field">
                                             <label class="checkbox">
-                                                <input type="checkbox" name="answer" id="{{ label }}" value="{{ label }}">
+                                                <input type="checkbox" name="answer" id="{{ label }}"
+                                                       value="{{ label }}" class="switch">
                                                 <label for="{{ label }}">{{ label }}</label>
                                             </label>
                                         </div>
@@ -39,14 +36,24 @@
                                     <input type="submit" class="button is-link is-centered" value="OK">
                                 </div>
                                 <div class="field">
-                                    <input type="submit" class="button is-link is-centered" value="no tool visible" formaction="noTools">
-                                    <input type="submit" class="button is-link is-centered" value="I don't know" formaction="dontKnow">
-                                    <input type="submit" class="button is-link is-centered" value="Go back" formaction="goToPreviousImage">
+                                    <input type="submit" class="button is-link is-centered" value="no tool visible"
+                                           formaction="noTools">
+                                    <input type="submit" class="button is-link is-centered" value="I don't know"
+                                           formaction="dontKnow">
+                                    <input type="submit" class="button is-link is-centered" value="Go back"
+                                           formaction="goToPreviousImage">
                                 </div>
                             </div>
                         </form>
+
                     </div>
                 </section>
+                                            <div class="field">
+                <div class="level-item has-text-centered">
+                    Please select the tool that you can see in the picture and confirm your
+                    selection by clicking the Submit button
+                </div>
+            </div>
             </div>
         </div>
 
@@ -55,12 +62,12 @@
             <div class="column is-two-fifths"></div>
             <div class="column">
                 <p> You're not logged in! </p>
-                <a href="{% url 'login'%}">Go to login</a>
+                <a href="{% url 'login' %}">Go to login</a>
             </div>
         </div>
 
 
-    {%  endif %}
+    {% endif %}
 {% endblock %}
 
 

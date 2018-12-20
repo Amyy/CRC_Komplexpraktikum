@@ -1,14 +1,14 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .models import Image, Label, Probability, Userlabels
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 import datetime
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.hashers import check_password
 
 
-def getPictureInformation(user, image=""):
-    if image =="":
+def getPictureInformation(user, image=None):
+    if image ==None:
         image = Image.objects.next_image(user)
     imagelabels = Probability.objects.get_image_labels(image)
     labels = Label.objects.all()
@@ -37,7 +37,9 @@ def getPreviousPictureInformation(image):
 
 
 def index(request):
-    # on calling the page, get the next picture from the database
+    if not request.user.is_authenticated:
+        return render(request, 'proto/login.html')
+
     context = getPictureInformation(request.user)
     return render(request, 'proto/main.html', context)
 
@@ -88,12 +90,13 @@ def logout_view(request):
 
 
 def showLogin(request):
+    if request.user.is_authenticated:
+        context = getPictureInformation(request.user)
+        return redirect("main")
     return render(request, 'proto/login.html')
 
 
 def checkLogin(request):
-    # TODO: Reaktion, wenn Nutzer falsches Passwort eingegeben hat
-
     username = request.POST.get('username')
     print("user", username)
     password = request.POST.get('password')

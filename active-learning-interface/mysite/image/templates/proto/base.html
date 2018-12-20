@@ -12,11 +12,11 @@
     <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
 
 </head>
-<body {% if request.path == "/image/changePassword" %} onload="setMessage()" {% endif %}
-        {% if request.path == "/image/checkLogin" %} onload="showLoginError()" {% endif %}>
-<section class="hero is-info">
+<body>
+
+<section class="hero is-info is-narrow">
     <div class="hero-body">
-        <div class="level-item has-text-centered">
+        <div class="container has-text-centered">
             <h1 class="title">
                 CRC GUI Prototype
             </h1>
