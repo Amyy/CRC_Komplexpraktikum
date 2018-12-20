@@ -5,7 +5,7 @@ import requests
 url = 'http://localhost:8000/image/upload'
 
 ### 'file.cs' Pfad zur Datei, die hochgeladen wird
-files = {'file': open('ann16-12.csv', 'rb')}
+files = {'file': open('ann-big.csv', 'rb')}
 
 ### login with username 'network'
 url_login='http://localhost:8000/admin/login/'
