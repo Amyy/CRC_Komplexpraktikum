@@ -12,10 +12,27 @@ class image_manager(models.Manager):
         image.label_set.set(label_set)
         image.save()
 
-    def next_image(self, user):
-        return self.order_by('variance', '-count_userlabels').first()
+    def next_image(self, user, image=None):
+        # return self.order_by('variance', '-count_userlabels').first()
+        nxt_img = None
+        if image:
+            #find first labeled image after argument image
+            image_ul = Userlabels.objects.filter(author=user, image=image).first()
+            labeled_images = Userlabels.objects.filter(author=user, timestamp__gt=image_ul.timestamp)\
+                .order_by('timestamp')
+            if labeled_images:
+                nxt_img = labeled_images.first().image
+        #print(nxt_img)
 
-    def previous_image(self, image, user):
+        if not nxt_img:
+            #find unlabeled image with highest variance and lowst userlabels count
+            unlabeled_images = Image.objects.exclude(userlabels__author=user)
+            nxt_img = unlabeled_images.annotate(num_ul=models.Count('userlabels'))\
+                .order_by('variance', '-num_ul').first()
+        return nxt_img
+
+
+    def previous_image(self, user, image):
         return self.order_by('variance', '-count_userlabels').first()
 
     def get_image(self, opset=0, op=0, number=0, path=False):
