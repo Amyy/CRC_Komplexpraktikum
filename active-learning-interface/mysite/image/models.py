@@ -80,6 +80,10 @@ class probability_manager(models.Manager):
             probability = Probability(image=image, label=prob[0], value=prob[1])
             probability.save()
 
+    def multi_set_probabilies(self, prob_map):
+        #create Probability entries
+        pass
+
     def read_annotations(self, path):
         with open(path, 'r') as csvfile:
             csvreader = csv.reader(csvfile, delimiter=',', quotechar='|')
