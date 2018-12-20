@@ -22,12 +22,13 @@ class image_manager(models.Manager):
                 .order_by('timestamp')
             if labeled_images:
                 nxt_img = labeled_images.first().image
-        print(nxt_img)
-        if not nxt_img:
-            #find unlabeled image with highest variance
-            unlabeled_images = Image.objects.exclude(userlabels__author=user)
-            nxt_img = unlabeled_images.order_by('variance').first()
+        #print(nxt_img)
 
+        if not nxt_img:
+            #find unlabeled image with highest variance and lowst userlabels count
+            unlabeled_images = Image.objects.exclude(userlabels__author=user)
+            nxt_img = unlabeled_images.annotate(num_ul=models.Count('userlabels'))\
+                .order_by('variance', '-num_ul').first()
         return nxt_img
 
 
