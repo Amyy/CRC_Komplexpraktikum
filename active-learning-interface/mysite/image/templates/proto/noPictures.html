@@ -1,0 +1,11 @@
+{% extends 'proto/base.html' %}
+{% block title %} error {% endblock %}
+{% block content %}
+    <div class="container has-text-centered">
+        You labeled all the pictures. Thank you! <br>
+        Please contact the administrator to get informed, when a new picture set needs labeling<br>
+        <a href="{% url 'logout_view' %}" class="icon-block">
+            Logout</i>
+        </a>
+    </div>
+{% endblock %}

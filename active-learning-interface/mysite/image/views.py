@@ -7,9 +7,17 @@ from django.contrib.auth import authenticate, login, logout, update_session_auth
 from django.contrib.auth.hashers import check_password
 
 
-def getPictureInformation(user, image=None):
-    if image ==None:
-        image = Image.objects.next_image(user)
+def getPictureInformation(request, user, image=None):
+    if image == None:
+        if Image.objects.next_image(user) == None:
+            # TODO: abfangen, wenn es kein Bild mehr zu labeln gibt
+            print("returned none")
+            context = {
+                'message' : 'noPics'
+            }
+            return context
+        else:
+            image = Image.objects.next_image(user)
     imagelabels = Probability.objects.get_image_labels(image)
     labels = Label.objects.all()
     description = image.description()
@@ -40,7 +48,15 @@ def index(request):
     if not request.user.is_authenticated:
         return render(request, 'proto/login.html')
 
-    context = getPictureInformation(request.user)
+    context = getPictureInformation(request, request.user)
+    try:
+        message = context.get('message')
+        print("message: ", message)
+        if message == 'noPics':
+            print("nothing")
+            return render(request, 'proto/noPictures.html')
+    except:
+        pass
     return render(request, 'proto/main.html', context)
 
 
@@ -91,7 +107,6 @@ def logout_view(request):
 
 def showLogin(request):
     if request.user.is_authenticated:
-        context = getPictureInformation(request.user)
         return redirect("main")
     return render(request, 'proto/login.html')
 
@@ -106,7 +121,7 @@ def checkLogin(request):
 
     if user is not None:
         login(request, user)
-        context = getPictureInformation(user)
+        context = getPictureInformation(request, user)
         return render(request, 'proto/main.html', context)
     else:
         print("not success with login")
@@ -125,13 +140,13 @@ def setLabels(request, answers):
 
 def noIdea(request):
     print("in no idea")
-    return render(request, 'proto/main.html', context=getPictureInformation(request.user))
+    return render(request, 'proto/main.html', context=getPictureInformation(request, request.user))
 
 
 def noToolVisible(request):
     print("no tool visible")
     setLabels(request, answers="")
-    context = getPictureInformation(request.user)
+    context = getPictureInformation(request, request.user)
     return render(request, 'proto/main.html', context)
 
 
@@ -143,7 +158,7 @@ def getSelectedLabels(request):
     # TODO: get the next picture and present it to the user
 
     #image =  Image.objects.next_image() mislam voa ne e potrebno, zs se povikuva vo getPictureInformation
-    context = getPictureInformation(request.user)
+    context = getPictureInformation(request, request.user)
 
     return render(request, 'proto/main.html', context)
 
