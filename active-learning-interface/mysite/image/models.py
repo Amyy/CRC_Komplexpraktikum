@@ -18,10 +18,11 @@ class image_manager(models.Manager):
         if image:
             #find first labeled image after argument image
             image_ul = Userlabels.objects.filter(author=user, image=image).first()
-            labeled_images = Userlabels.objects.filter(author=user, timestamp__gt=image_ul.timestamp)\
-                .order_by('timestamp')
-            if labeled_images:
-                nxt_img = labeled_images.first().image
+            if image_ul:
+                labeled_images = Userlabels.objects.filter(author=user, timestamp__gt=image_ul.timestamp)\
+                    .order_by('timestamp')
+                if labeled_images:
+                    nxt_img = labeled_images.first().image
         #print(nxt_img)
 
         if not nxt_img:
@@ -50,6 +51,9 @@ class image_manager(models.Manager):
             images = self.filter(opset=opset, op=op, number=number)
         return images.first()
 
+    def get_labeled_images(self, user, amount = 20):
+        labeled_images = Userlabels.objects.filter(author=user).order_by('-timestamp')
+        return labeled_images[0:amount]
 
 
 class probability_manager(models.Manager):
@@ -99,12 +103,8 @@ class probability_manager(models.Manager):
                 image.variance = variance
                 image.save()
 
-
-
 #    def get_path(self, opset, op, picture):
 #        return '/' + opset + '/' + op + '/' + picture + '.png'
-
-
 
 class userlabels_mangager(models.Manager):
 
