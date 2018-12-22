@@ -1,10 +1,12 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.db import transaction
 import numpy
 import csv
 import math
 
 FRAME_FREQ = 25
+NETWORK_USER = 'network'
 
 
 class image_manager(models.Manager):
@@ -57,15 +59,6 @@ class image_manager(models.Manager):
 
 
 class probability_manager(models.Manager):
-    def calc_variance(self, image):
-        probabilities = self.filter(image=image).values_list('value')
-        prob_values = [p[0] for p in probabilities]
-        if len(prob_values) < 1:
-            print ('calc_variance: No probability values.')
-            return
-        variance = numpy.var(prob_values)
-        image.variance = variance
-        image.save()
 
     def get_image_labels(self, image):
         im_prob = self.filter(image=image)
@@ -84,9 +77,6 @@ class probability_manager(models.Manager):
             probability = Probability(image=image, label=prob[0], value=prob[1])
             probability.save()
 
-    def multi_set_probabilies(self, prob_map):
-        #create Probability entries
-        pass
 
     def read_annotations(self, path):
         with open(path, 'r') as csvfile:
@@ -102,9 +92,6 @@ class probability_manager(models.Manager):
                 self.set_probabilities(image=image, probabilities=probabilities)
                 image.variance = variance
                 image.save()
-
-#    def get_path(self, opset, op, picture):
-#        return '/' + opset + '/' + op + '/' + picture + '.png'
 
 class userlabels_mangager(models.Manager):
 
@@ -124,12 +111,6 @@ class userlabels_mangager(models.Manager):
 
     def countLabels(self, image):
         return self.filter(image=image).count()
-
-    def write_csv(self, csvfile):
-        spamwriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-        ul_all = self.all()
-        for userlabel in ul_all:
-            spamwriter.writerow([userlabel.image.name] + userlabel.get_labels())
 
     def generate_csv(self, csvfile, opset, op):
         spamwriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
@@ -180,6 +161,58 @@ class userlabels_mangager(models.Manager):
             #print([name] + write_labels)
             #write to csv file
             spamwriter.writerow([int(name) * FRAME_FREQ] + write_labels)
+
+    def read_annotations(self, path):
+        with open(path, 'r') as csvfile:
+            csvreader = csv.reader(csvfile, delimiter=',', quotechar='|')
+            images = []
+            image_labels = []
+            image_var = []
+            label_classes = Label.objects.all()
+            for row in csvreader:
+                labels = []
+                path = row[0]
+                #convert labels
+                for i in range(0,7):
+                    if int(row[i+1]):
+                        labels.append(label_classes[i])
+                #convert variance
+                variance = float(row[8])
+                opset, op, number = convert_path(path)
+                image, create = Image.objects.get_or_create(opset=opset, op=op, name=number)
+                images.append(image)
+                image_labels.append(labels)
+                image_var.append(variance)
+            self.update_annotations(images=images, image_labels=image_labels)
+            self.update_variances(images=images, variances=image_var)
+
+    def update_annotations(self, images, image_labels):
+        network_user = User.objects.get(username=NETWORK_USER)
+        new_labels = []
+        for i, image in enumerate(images):
+            userlabel, create = Userlabels.objects.get_or_create(image=image, author=network_user)
+            userlabel.label.set(image_labels[i])
+            userlabel.save()
+        """
+        network_user = User.objects.get(username=NETWORK_USER)
+        #delete outdated network labels
+        self.filter(image__in=images, author=network_user).delete()
+        #create new network labels
+        new_network_labels = []
+        for image_label_list in image_labels:
+            new_network_labels.append(Userlabels(image=images[i], author=network_user))
+        self.bulk_create(new_network_labels)
+        #add labels
+        with transaction.atomic():
+            for image in images:
+                UserProfile.objects.filter(pk=image.pk).update()
+        """
+
+    def update_variances(self, images, variances):
+        #bulk update
+        with transaction.atomic():
+            for i, image in enumerate(images):
+                Image.objects.filter(pk=image.pk).update(variance=variances[i])
 
 
 class Image(models.Model):
@@ -243,4 +276,9 @@ class Probability(models.Model):
         toString = '{} labeled {} with certainty {}'.format(self.image, self.label, self.value)
         return toString
 
-
+def convert_path(path):
+    split = path.split('/')
+    opset = split[len(split) - 3]
+    op = split[len(split) - 2]
+    number = int(split[len(split) - 1].split('.')[0])
+    return opset, op, number
