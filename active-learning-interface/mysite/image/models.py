@@ -99,14 +99,9 @@ class probability_manager(models.Manager):
 class userlabels_mangager(models.Manager):
 
     def set_userlabels(self, image, user, label_set = []):
-        #TODO get_or_create
-        userlabels = Userlabels(image = image, author = user)
+        userlabels, created = Userlabels.objects.get_or_create(image=image, author=user)
+        userlabels.label.set(label_set)
         userlabels.save()
-        for label in label_set:
-            userlabels.label.add(label)
-        userlabels.save()
-        image.count_userlabels = self.countLabels(image)
-        image.save()
 
     def set_userlabels_str(self, image, user, label_set = []):
         label_set_query = Label.objects.filter(name__in=label_set)
