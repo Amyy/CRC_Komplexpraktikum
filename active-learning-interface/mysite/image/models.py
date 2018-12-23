@@ -57,7 +57,7 @@ class image_manager(models.Manager):
         labeled_images = Userlabels.objects.filter(author=user).order_by('-timestamp')
         return labeled_images[0:amount]
 
-
+"""
 class probability_manager(models.Manager):
 
     def get_image_labels(self, image):
@@ -93,6 +93,7 @@ class probability_manager(models.Manager):
                 image.variance = variance
                 image.save()
 
+"""
 class userlabels_mangager(models.Manager):
 
     def set_userlabels(self, image, user, label_set = []):
@@ -114,18 +115,22 @@ class userlabels_mangager(models.Manager):
 
     def generate_csv(self, csvfile, opset, op):
         spamwriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+        network_user = User.objects.get(username=NETWORK_USER)
         #filter images by opset and op
         images = Image.objects.filter(opset=opset, op=op).order_by('number')
-        ul_op = self.filter(image__opset = opset, image__op = op)
+        #ul_op = self.filter(image__opset = opset, image__op = op)
         #ul_group_label_dict = dict((d['image__name'], dict(d, index=index)) for (index, d) in enumerate(ul_group_label))
         labels = Label.objects.all()
 
         #iterate through images
         for image in images:
             name = image.name
-            ul_image = self.filter(image__name=name).values('label__name').annotate(models.Count('label__name'))
+            ul_image = self.filter(image__name=name).values('label__name')\
+                .annotate(models.Count('label__name'))\
+                .exclude(author=network_user)
             write_labels = []
 
+            #print(ul_image)
             #if userlabes exist
             #calculate majority vote
             if ul_image:
@@ -151,10 +156,10 @@ class userlabels_mangager(models.Manager):
             #if no userlabels exist
             #calculate NN prediction
             else:
-                prob_labels = Probability.objects.get_image_labels(image)
+                nn_labels = Label.objects.filter(userlabels__author=network_user, userlabels__image=image)
                 for label in labels:
                     label_string = '0'
-                    if prob_labels.__contains__(label):
+                    if label in nn_labels:
                         label_string = '1'
                     write_labels.append(label_string)
 
@@ -214,6 +219,11 @@ class userlabels_mangager(models.Manager):
             for i, image in enumerate(images):
                 Image.objects.filter(pk=image.pk).update(variance=variances[i])
 
+    def get_image_labels(self, image):
+        network_user = User.objects.get(username=NETWORK_USER)
+        nn_labels = Label.objects.filter(userlabels__author=network_user, userlabels__image=image)
+        return nn_labels
+
 
 class Image(models.Model):
     name = models.CharField(max_length=200)
@@ -270,7 +280,7 @@ class Probability(models.Model):
     label = models.ForeignKey(Label, on_delete=models.CASCADE)
     value = models.BooleanField()
 
-    objects = probability_manager()
+    #objects = probability_manager()
 
     def __str__(self):
         toString = '{} labeled {} with certainty {}'.format(self.image, self.label, self.value)
