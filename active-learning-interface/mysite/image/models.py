@@ -17,6 +17,8 @@ class image_manager(models.Manager):
     def next_image(self, user, image=None):
         # return self.order_by('variance', '-count_userlabels').first()
         nxt_img = None
+        network_user = User.objects.get(username=NETWORK_USER)
+
         if image:
             #find first labeled image after argument image
             image_ul = Userlabels.objects.filter(author=user, image=image).first()
@@ -29,7 +31,7 @@ class image_manager(models.Manager):
 
         if not nxt_img:
             #find unlabeled image with highest variance and lowst userlabels count
-            unlabeled_images = Image.objects.exclude(userlabels__author=user)
+            unlabeled_images = Image.objects.exclude(userlabels__author__in=[user, network_user])
             nxt_img = unlabeled_images.annotate(num_ul=models.Count('userlabels'))\
                 .order_by('variance', '-num_ul').first()
         return nxt_img
@@ -271,20 +273,6 @@ class Userlabels(models.Model):
             else:
                 labels_flags.append('0')
         return labels_flags
-
-
-
-class Probability(models.Model):
-    THRESHOLD = 0.5
-    image = models.ForeignKey(Image, on_delete=models.CASCADE)
-    label = models.ForeignKey(Label, on_delete=models.CASCADE)
-    value = models.BooleanField()
-
-    #objects = probability_manager()
-
-    def __str__(self):
-        toString = '{} labeled {} with certainty {}'.format(self.image, self.label, self.value)
-        return toString
 
 def convert_path(path):
     split = path.split('/')
