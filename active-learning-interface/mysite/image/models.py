@@ -31,7 +31,7 @@ class image_manager(models.Manager):
 
         if not nxt_img:
             #find unlabeled image with highest variance and lowst userlabels count
-            unlabeled_images = Image.objects.exclude(userlabels__author__in=[user, network_user])
+            unlabeled_images = Image.objects.exclude(userlabels__author=user)
             nxt_img = unlabeled_images.annotate(num_ul=models.Count('userlabels'))\
                 .order_by('variance', '-num_ul').first()
         return nxt_img
@@ -99,6 +99,7 @@ class probability_manager(models.Manager):
 class userlabels_mangager(models.Manager):
 
     def set_userlabels(self, image, user, label_set = []):
+        #TODO get_or_create
         userlabels = Userlabels(image = image, author = user)
         userlabels.save()
         for label in label_set:
@@ -200,6 +201,8 @@ class userlabels_mangager(models.Manager):
             userlabel, create = Userlabels.objects.get_or_create(image=image, author=network_user)
             userlabel.label.set(image_labels[i])
             userlabel.save()
+        print(len(images), ' images annotated.')
+
         """
         network_user = User.objects.get(username=NETWORK_USER)
         #delete outdated network labels
@@ -217,6 +220,7 @@ class userlabels_mangager(models.Manager):
 
     def update_variances(self, images, variances):
         #bulk update
+        print('update ', len(images), ' images')
         with transaction.atomic():
             for i, image in enumerate(images):
                 Image.objects.filter(pk=image.pk).update(variance=variances[i])
