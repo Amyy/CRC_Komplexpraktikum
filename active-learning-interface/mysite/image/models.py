@@ -46,10 +46,11 @@ class image_manager(models.Manager):
     def previous_image(self, user, image):
         prev_image = image
         labeled_images = Userlabels.objects.filter(author=user).order_by('-timestamp')
-        print(user, image, labeled_images)
+        image_ul = Userlabels.objects.filter(author=user, image=image).first()
+        if image_ul:
+            labeled_images = labeled_images.filter(timestamp__lt=image_ul.timestamp)
         if labeled_images:
-            prev_img = labeled_images.first().image
-            print ('new image', prev_image)
+            prev_image = labeled_images.first().image
         return prev_image
 
     def get_image(self, opset=0, op=0, number=0, path=False):
