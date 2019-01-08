@@ -166,7 +166,8 @@ def goToPreviousImage(request):
 
     print(" Go to previous image ")
     image = Image.objects.next_image(request.user)
-    previous_image = Image.objects.previous_image(image, request.user)
+    #TODO: next_image gibt nicht immer das aktuelle bild zurück
+    previous_image = Image.objects.previous_image(request.user, image)
     context = getPreviousPictureInformation(previous_image)
 
     return render(request, 'proto/main.html', context)

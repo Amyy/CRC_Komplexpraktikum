@@ -44,7 +44,14 @@ class image_manager(models.Manager):
 
 
     def previous_image(self, user, image):
-        return self.order_by('variance').first()
+        prev_image = image
+        labeled_images = Userlabels.objects.filter(author=user).order_by('-timestamp')
+        image_ul = Userlabels.objects.filter(author=user, image=image).first()
+        if image_ul:
+            labeled_images = labeled_images.filter(timestamp__lt=image_ul.timestamp)
+        if labeled_images:
+            prev_image = labeled_images.first().image
+        return prev_image
 
     def get_image(self, opset=0, op=0, number=0, path=False):
         #Eigenschaften aus Pfad extrahieren
@@ -130,7 +137,8 @@ class userlabels_mangager(models.Manager):
         for image in images:
             name = image.name
             ul_image = self.filter(image__name=name).exclude(author=network_user)
-            ul_labels = ul_image.values('label__name').annotate(models.Count('label'), models.Count('label__name'))
+            ul_labels = ul_image.values('label__name').annotate(models.Count('label__name'))
+            print('ul_labels', ul_labels)
             #TODO test Count label
 
             write_labels = []
@@ -144,7 +152,7 @@ class userlabels_mangager(models.Manager):
 
                 # generate dict of labels and count of votes
                 ul_image_dict = dict([])
-                for ulabel in ul_image:
+                for ulabel in ul_labels:
                     ul_image_dict[ulabel['label__name']] = ulabel['label__name__count']
                 #print(ul_image_dict)
 
