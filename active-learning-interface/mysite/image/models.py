@@ -19,6 +19,8 @@ class image_manager(models.Manager):
         nxt_img = None
         network_user = User.objects.get(username=NETWORK_USER)
 
+        #print('last image:',image)
+
         if image:
             #find first labeled image after argument image
             image_ul = Userlabels.objects.filter(author=user, image=image).first()
@@ -33,12 +35,16 @@ class image_manager(models.Manager):
             #find unlabeled image with highest variance and lowst userlabels count
             unlabeled_images = Image.objects.exclude(userlabels__author=user)
             nxt_img = unlabeled_images.annotate(num_ul=models.Count('userlabels'))\
-                .order_by('variance', '-num_ul').first()
+                .order_by('-variance', 'num_ul').first()
+            nxt_img2 = unlabeled_images.annotate(num_ul=models.Count('userlabels'))\
+                .order_by('-variance', 'num_ul')[1]
+            print('next image', nxt_img, nxt_img.variance, nxt_img.num_ul)
+            print('next image2', nxt_img2, nxt_img2.variance, nxt_img2.num_ul)
         return nxt_img
 
 
     def previous_image(self, user, image):
-        return self.order_by('variance', '-count_userlabels').first()
+        return self.order_by('variance').first()
 
     def get_image(self, opset=0, op=0, number=0, path=False):
         #Eigenschaften aus Pfad extrahieren
@@ -123,18 +129,18 @@ class userlabels_mangager(models.Manager):
         #iterate through images
         for image in images:
             name = image.name
-            ul_image = self.filter(image__name=name).values('label__name')\
-                .annotate(models.Count('label__name'))\
-                .exclude(author=network_user)
-            write_labels = []
+            ul_image = self.filter(image__name=name).exclude(author=network_user)
+            ul_labels = ul_image.values('label__name').annotate(models.Count('label'), models.Count('label__name'))
+            #TODO test Count label
 
-            #print(ul_image)
+            write_labels = []
+            print(ul_image)
             #if userlabes exist
             #calculate majority vote
             if ul_image:
                 min_votes = math.ceil(len(ul_image) / 2)
                 label_votes = dict()
-                #print(name, min_votes)
+                print(name, min_votes)
 
                 # generate dict of labels and count of votes
                 ul_image_dict = dict([])
@@ -215,7 +221,7 @@ class userlabels_mangager(models.Manager):
 
     def update_variances(self, images, variances):
         #bulk update
-        print('update ', len(images), ' images')
+        print('updated variances of ', len(images), ' images')
         with transaction.atomic():
             for i, image in enumerate(images):
                 Image.objects.filter(pk=image.pk).update(variance=variances[i])
@@ -230,7 +236,6 @@ class Image(models.Model):
     name = models.CharField(max_length=200)
     variance = models.FloatField(null=True)
     data = models.ImageField(null=True, default='default.jpg')
-    count_userlabels = models.IntegerField(null=True)
     opset = models.IntegerField(null=True)
     op = models.IntegerField(null=True)
     number = models.IntegerField(null=True)
