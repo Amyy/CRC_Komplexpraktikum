@@ -4,7 +4,8 @@ import sys
 
 if len(sys.argv) == 0:
 	exit()
-path = sys.argv[1]
+
+path = sys.argv[0]
 
 ### url, an die csv hochgeladen wird
 url = 'http://localhost:8000/image/upload'

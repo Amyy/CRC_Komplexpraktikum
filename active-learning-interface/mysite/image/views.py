@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import Image, Label, Probability, Userlabels
+from .models import Image, Label, Userlabels
 from django.http import HttpResponse, HttpResponseRedirect
 import datetime
 from django.contrib.auth.models import User
@@ -18,7 +18,7 @@ def getPictureInformation(request, user, image=None):
             return context
         else:
             image = Image.objects.next_image(user)
-    imagelabels = Probability.objects.get_image_labels(image)
+    imagelabels = Userlabels.objects.get_image_labels(image)
     labels = Label.objects.all()
     description = image.description()
     context = {
@@ -32,7 +32,7 @@ def getPictureInformation(request, user, image=None):
 # die Funktion soll man aufrufen wenn man zurück zum previous image geht
 # TODO: sieht nicht so aus, als ob die Funktion etwas macht, das nicht in getPictureInformation passoert
 def getPreviousPictureInformation(image):
-    imagelabels = Probability.objects.get_image_labels(image)
+    imagelabels = Userlabels.objects.get_image_labels(image)
     labels = Label.objects.all()
     description = image.description()
     context = {
@@ -191,7 +191,7 @@ def download_csv(request, opset, op):
 def upload_probabilities(request):
     if request.method == 'POST':
         path = handle_uploaded_file(request.FILES['file'])
-        Probability.objects.read_annotations(path)
+        Userlabels.objects.read_annotations(path)
     return index(request)
 
 

@@ -1,8 +1,7 @@
 from django.contrib import admin
 
-from .models import Image, Label, Probability, Userlabels
+from .models import Image, Label, Userlabels
 
 admin.site.register(Image)
 admin.site.register(Label)
-admin.site.register(Probability)
 admin.site.register(Userlabels)
