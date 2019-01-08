@@ -135,6 +135,7 @@ def checkLogin(request):
 def setLabels(request, answers):
     user = request.user
     image = Image.objects.next_image(user)  # should get the current picture, as there are no labels set to the current one
+    #TODO: next_image() gibt ein falsches Bild zurück, wenn vorher 'Go Back' verwendet wurde (Landfried)
     Userlabels.objects.set_userlabels_str(image, user, answers)
 
 
@@ -166,7 +167,7 @@ def goToPreviousImage(request):
 
     print(" Go to previous image ")
     image = Image.objects.next_image(request.user)
-    #TODO: next_image gibt nicht immer das aktuelle bild zurück
+    #TODO: next_image gibt nicht immer das aktuelle bild zurück (Landfried)
     previous_image = Image.objects.previous_image(request.user, image)
     context = getPreviousPictureInformation(previous_image)
 

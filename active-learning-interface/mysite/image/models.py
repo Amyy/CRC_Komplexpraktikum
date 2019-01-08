@@ -10,12 +10,7 @@ NETWORK_USER = 'network'
 
 
 class image_manager(models.Manager):
-    def set_userlabels(self, image, label_set = []):
-        image.label_set.set(label_set)
-        image.save()
-
     def next_image(self, user, image=None):
-        # return self.order_by('variance', '-count_userlabels').first()
         nxt_img = None
         network_user = User.objects.get(username=NETWORK_USER)
 
@@ -120,9 +115,10 @@ class userlabels_mangager(models.Manager):
         label_set_query = Label.objects.filter(name__in=label_set)
         self.set_userlabels(image, user, label_set_query)
 
-
-    def countLabels(self, image):
-        return self.filter(image=image).count()
+    def set_uncertain(self, image, user, value):
+        userlabels, created = Userlabels.objects.get_or_create(image=image, author=user)
+        userlabels.uncertain = value
+        userlabels.save()
 
     def generate_csv(self, csvfile, opset, op):
         spamwriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
@@ -270,6 +266,7 @@ class Userlabels(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     label = models.ManyToManyField(Label)
     timestamp = models.DateTimeField(auto_now_add=True)
+    uncertain = models.BooleanField(default=False)
     objects = userlabels_mangager()
 
     def __str__(self):
