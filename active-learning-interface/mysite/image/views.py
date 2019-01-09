@@ -29,21 +29,6 @@ def getPictureInformation(request, user, image=None):
     }
     return context
 
-# die Funktion soll man aufrufen wenn man zurück zum previous image geht
-# TODO: sieht nicht so aus, als ob die Funktion etwas macht, das nicht in getPictureInformation passoert
-def getPreviousPictureInformation(image):
-    imagelabels = Userlabels.objects.get_image_labels(image)
-    labels = Label.objects.all()
-    description = image.description()
-    context = {
-        'image': image,
-        'labels': labels,
-        'imageLabels': imagelabels,
-        'description': description
-    }
-    return context
-
-
 def index(request):
     if not request.user.is_authenticated:
         return render(request, 'proto/login.html')
@@ -113,12 +98,8 @@ def showLogin(request):
 
 def checkLogin(request):
     username = request.POST.get('username')
-    print("user", username)
     password = request.POST.get('password')
-    print("password", password)
     user = authenticate(request, username=username, password=password)
-    print("user", user )
-
     if user is not None:
         login(request, user)
         context = getPictureInformation(request, user)
@@ -140,6 +121,7 @@ def setLabels(request, answers):
 
 
 def noIdea(request):
+    # TODO; benötigt noch eine entsprechende Umsetzung, so dass dfer Nutzer hier dieses Bild nicht mehr angezeigt bekommt
     print("in no idea")
     return render(request, 'proto/main.html', context=getPictureInformation(request, request.user))
 
@@ -156,11 +138,9 @@ def getSelectedLabels(request):
     for answer in request.POST.getlist('answer'):
         print(answer)
     setLabels(request, answers=request.POST.getlist('answer'))
-    # TODO: get the next picture and present it to the user
+    # TODO: get the next picture (not only the next description) and present it to the user
 
-    #image =  Image.objects.next_image() mislam voa ne e potrebno, zs se povikuva vo getPictureInformation
     context = getPictureInformation(request, request.user)
-
     return render(request, 'proto/main.html', context)
 
 def goToPreviousImage(request):
@@ -169,8 +149,7 @@ def goToPreviousImage(request):
     image = Image.objects.next_image(request.user)
     #TODO: next_image gibt nicht immer das aktuelle bild zurück (Landfried)
     previous_image = Image.objects.previous_image(request.user, image)
-    context = getPreviousPictureInformation(previous_image)
-
+    context = getPictureInformation(request, request.user, previous_image)
     return render(request, 'proto/main.html', context)
 
 
