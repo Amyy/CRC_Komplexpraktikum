@@ -3,21 +3,23 @@
 {% block content %}
     {% if user.is_authenticated %}
         <body onload="setLabels()">
-        <section class="section is-centered">
+                <div class="columns">
+                <div class="column">
 
+            <section class="section is-centered">
             <div class="level-item has-image-centered">
                 <figure class="image is-256by256">
                     <img src="{{ image.data.url }}">
                     <figcaption>description: {{ description }}</figcaption>
                 </figure>
             </div>
-        </section>
-        <div class="columns">
+            </section>
+                </div>
             <div class="column">
-                <section class="section">
+            <section class="section">
 
                     <div class="level-item has-text-centered">
-                        <form action="getSelectedLabels" method="POST">
+                        <form action="getSelectedLabels" method="POST" id="labelForm" onkeyup="getEnter()">
                             {% csrf_token %}
                             <div class="container">
                                 <div class="field">
@@ -33,7 +35,7 @@
                                     {% endfor %}
                                 </div>
                                 <div class="field">
-                                    <input type="submit" class="button is-link is-centered" value="OK">
+                                    <input type="submit" class="button is-link is-centered" value="OK" id="submitBtn">
                                 </div>
                                 <div class="field">
                                     <input type="submit" class="button is-link is-centered" value="no tool visible"
@@ -47,13 +49,14 @@
                         </form>
 
                     </div>
-                </section>
                                             <div class="field">
                 <div class="level-item has-text-centered">
-                    Please select the tool that you can see in the picture and confirm your
+                    Please select the tool that you can see in the picture <br>
+                    and confirm your
                     selection by clicking the Submit button
                 </div>
             </div>
+            </section>
             </div>
         </div>
 
