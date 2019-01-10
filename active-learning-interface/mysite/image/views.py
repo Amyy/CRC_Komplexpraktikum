@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from .models import Image, Label, Userlabels
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse
 import datetime
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
@@ -10,8 +10,6 @@ from django.contrib.auth.hashers import check_password
 def getPictureInformation(request, user, image=None):
     if image == None:
         if Image.objects.next_image(user) == None:
-            # TODO: abfangen, wenn es kein Bild mehr zu labeln gibt
-            print("returned none")
             context = {
                 'message' : 'noPics'
             }
@@ -36,7 +34,6 @@ def index(request):
     context = getPictureInformation(request, request.user)
     try:
         message = context.get('message')
-        print("message: ", message)
         if message == 'noPics':
             print("nothing")
             return render(request, 'proto/noPictures.html')
@@ -102,7 +99,9 @@ def checkLogin(request):
     user = authenticate(request, username=username, password=password)
     if user is not None:
         login(request, user)
-        context = getPictureInformation(request, user)
+        image = Image.objects.next_image(user)
+        request.session['image'] = image.id
+        context = getPictureInformation(request, user, Image.objects.get(id=request.session.get('image')))
         return render(request, 'proto/main.html', context)
     else:
         print("not success with login")
@@ -117,17 +116,19 @@ def setLabels(request, answers):
     user = request.user
     image = Image.objects.next_image(user)  # should get the current picture, as there are no labels set to the current one
     #TODO: next_image() gibt ein falsches Bild zurück, wenn vorher 'Go Back' verwendet wurde (Landfried)
+
+    # TODO: statt immer next image aufzurufen, muss das aktuelle Bild gespeichert werden, so dass es weiter verwendet werden kann
     Userlabels.objects.set_userlabels_str(image, user, answers)
 
 
 def noIdea(request):
-    # TODO; benötigt noch eine entsprechende Umsetzung, so dass dfer Nutzer hier dieses Bild nicht mehr angezeigt bekommt
-    print("in no idea")
+    image = Image.objects.next_image(request.user)
+    Userlabels.objects.set_uncertain(image, request.user, True)
     return render(request, 'proto/main.html', context=getPictureInformation(request, request.user))
 
 
 def noToolVisible(request):
-    print("no tool visible")
+    # if no tool is visible, just set all the selected labels to empty
     setLabels(request, answers="")
     context = getPictureInformation(request, request.user)
     return render(request, 'proto/main.html', context)
@@ -139,14 +140,14 @@ def getSelectedLabels(request):
         print(answer)
     setLabels(request, answers=request.POST.getlist('answer'))
     # TODO: get the next picture (not only the next description) and present it to the user
-
+    # TODO: Lösungsidee: aktuelles Bild zwischenspeichern
     context = getPictureInformation(request, request.user)
     return render(request, 'proto/main.html', context)
 
 def goToPreviousImage(request):
-
     print(" Go to previous image ")
     image = Image.objects.next_image(request.user)
+
     #TODO: next_image gibt nicht immer das aktuelle bild zurück (Landfried)
     previous_image = Image.objects.previous_image(request.user, image)
     context = getPictureInformation(request, request.user, previous_image)
