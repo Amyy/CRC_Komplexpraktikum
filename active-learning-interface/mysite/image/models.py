@@ -134,17 +134,17 @@ class userlabels_mangager(models.Manager):
             name = image.name
             ul_image = self.filter(image__name=name).exclude(author=network_user)
             ul_labels = ul_image.values('label__name').annotate(models.Count('label__name'))
-            print('ul_labels', ul_labels)
+            #print('ul_labels', ul_labels)
             #TODO test Count label
 
             write_labels = []
-            print(ul_image)
+            #print(ul_image)
             #if userlabes exist
             #calculate majority vote
             if ul_image:
                 min_votes = math.ceil(len(ul_image) / 2)
                 label_votes = dict()
-                print(name, min_votes)
+                #print(name, min_votes)
 
                 # generate dict of labels and count of votes
                 ul_image_dict = dict([])
@@ -160,20 +160,20 @@ class userlabels_mangager(models.Manager):
                         if ul_image_dict[label_name] >= min_votes:
                             label_string = '1'
                     write_labels.append(label_string)
-
-            #if no userlabels exist
-            #calculate NN prediction
-            else:
-                nn_labels = Label.objects.filter(userlabels__author=network_user, userlabels__image=image)
-                for label in labels:
-                    label_string = '0'
-                    if label in nn_labels:
-                        label_string = '1'
-                    write_labels.append(label_string)
-
-            #print([name] + write_labels)
-            #write to csv file
-            spamwriter.writerow([int(name) * FRAME_FREQ] + write_labels)
+                """
+                #if no userlabels exist
+                #calculate NN prediction
+                else:
+                    nn_labels = Label.objects.filter(userlabels__author=network_user, userlabels__image=image)
+                    for label in labels:
+                        label_string = '0'
+                        if label in nn_labels:
+                            label_string = '1'
+                        write_labels.append(label_string)
+                """
+                #print([name] + write_labels)
+                #write to csv file
+                spamwriter.writerow([int(name) * FRAME_FREQ] + write_labels)
 
     def read_annotations(self, path):
         with open(path, 'r') as csvfile:
