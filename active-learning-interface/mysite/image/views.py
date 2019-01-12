@@ -6,16 +6,24 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.hashers import check_password
 
+def getImage(request):
+    if not request.session.get('image'):
+        print("no image in session")
+        next_image = Image.objects.next_image(request.user)
 
-def getPictureInformation(request, user, image=None):
+    else:
+        print("image exists in query")
+        next_image = Image.objects.next_image(request.user, request.session.get('image'))
+
+    request.session['image'] = next_image.id
+    return next_image
+
+def getPictureInformation(request, image):
     if image == None:
-        if Image.objects.next_image(user) == None:
-            context = {
-                'message' : 'noPics'
-            }
-            return context
-        else:
-            image = Image.objects.next_image(user)
+        context = {
+            'message' : 'noPics'
+        }
+        return context
     imagelabels = Userlabels.objects.get_image_labels(image)
     labels = Label.objects.all()
     description = image.description()
@@ -30,12 +38,11 @@ def getPictureInformation(request, user, image=None):
 def index(request):
     if not request.user.is_authenticated:
         return render(request, 'proto/login.html')
-
-    context = getPictureInformation(request, request.user)
+    next_image = getImage(request)
+    context = getPictureInformation(request, next_image)
     try:
         message = context.get('message')
         if message == 'noPics':
-            print("nothing")
             return render(request, 'proto/noPictures.html')
     except:
         pass
@@ -99,9 +106,12 @@ def checkLogin(request):
     user = authenticate(request, username=username, password=password)
     if user is not None:
         login(request, user)
-        image = Image.objects.next_image(user)
-        request.session['image'] = image.id
-        context = getPictureInformation(request, user, Image.objects.get(id=request.session.get('image')))
+        # on login, get the next picture to be shown
+        image = getImage(request)
+        # save the ID for further use
+        #request.session['image'] = image.id
+        # call the picture Infomation function with the current picture
+        context = getPictureInformation(request, image)
         return render(request, 'proto/main.html', context)
     else:
         print("not success with login")
@@ -114,7 +124,8 @@ def checkLogin(request):
 
 def setLabels(request, answers):
     user = request.user
-    image = Image.objects.next_image(user)  # should get the current picture, as there are no labels set to the current one
+    image = Image.objects.get(id=request.session.get('image'))   # should get the current picture, as there are no labels set to the current one
+
     #TODO: next_image() gibt ein falsches Bild zurück, wenn vorher 'Go Back' verwendet wurde (Landfried)
 
     # TODO: statt immer next image aufzurufen, muss das aktuelle Bild gespeichert werden, so dass es weiter verwendet werden kann
@@ -122,15 +133,15 @@ def setLabels(request, answers):
 
 
 def noIdea(request):
-    image = Image.objects.next_image(request.user)
+    image = Image.objects.get(id=request.session.get("image"))
     Userlabels.objects.set_uncertain(image, request.user, True)
-    return render(request, 'proto/main.html', context=getPictureInformation(request, request.user))
+    return render(request, 'proto/main.html', context=getPictureInformation(request, image))
 
 
 def noToolVisible(request):
     # if no tool is visible, just set all the selected labels to empty
     setLabels(request, answers="")
-    context = getPictureInformation(request, request.user)
+    context = getPictureInformation(request, Image.objects.get(id=request.session.get("image")))
     return render(request, 'proto/main.html', context)
 
 
@@ -140,17 +151,16 @@ def getSelectedLabels(request):
         print(answer)
     setLabels(request, answers=request.POST.getlist('answer'))
     # TODO: get the next picture (not only the next description) and present it to the user
-    # TODO: Lösungsidee: aktuelles Bild zwischenspeichern
-    context = getPictureInformation(request, request.user)
+    next_image = getImage(request)
+    context = getPictureInformation(request, next_image)
     return render(request, 'proto/main.html', context)
 
 def goToPreviousImage(request):
-    print(" Go to previous image ")
-    image = Image.objects.next_image(request.user)
-
-    #TODO: next_image gibt nicht immer das aktuelle bild zurück (Landfried)
+    # take the current image to get the previous one
+    image = Image.objects.get(id=request.session.get('image'))
     previous_image = Image.objects.previous_image(request.user, image)
-    context = getPictureInformation(request, request.user, previous_image)
+    # TODO: handover the information, that the previous picture was used
+    context = getPictureInformation(request, previous_image)
     return render(request, 'proto/main.html', context)
 
 
