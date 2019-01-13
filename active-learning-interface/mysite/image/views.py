@@ -6,21 +6,20 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.hashers import check_password
 
+
 def getImage(request):
     if not request.session.get('image'):
-        print("no image in session")
         next_image = Image.objects.next_image(request.user)
-
     else:
-        print("image exists in query")
         next_image = Image.objects.next_image(request.user, request.session.get('image'))
     request.session['image'] = next_image.id
     return next_image
 
-def getPictureInformation(request, image, previous = False):
+
+def getPictureInformation(request, image, previous=False):
     if image == None:
         context = {
-            'message' : 'noPics'
+            'message': 'noPics'
         }
         return context
     imagelabels = Userlabels.objects.get_image_labels(image)
@@ -31,9 +30,10 @@ def getPictureInformation(request, image, previous = False):
         'labels': labels,
         'imageLabels': imagelabels,
         'description': description,
-        'previous' : previous
+        'previous': previous
     }
     return context
+
 
 def index(request):
     if not request.user.is_authenticated:
@@ -106,29 +106,19 @@ def checkLogin(request):
     user = authenticate(request, username=username, password=password)
     if user is not None:
         login(request, user)
-        # on login, get the next picture to be shown
         image = getImage(request)
-        # save the ID for further use
-        #request.session['image'] = image.id
-        # call the picture Infomation function with the current picture
         context = getPictureInformation(request, image)
         return render(request, 'proto/main.html', context)
     else:
-        print("not success with login")
         context = {
-            'message' : 'Wrong username or password'
+            'message': 'Wrong username or password'
         }
         return render(request, 'proto/login.html', context)
 
 
-
 def setLabels(request, answers):
     user = request.user
-    image = Image.objects.get(id=request.session.get('image'))   # should get the current picture, as there are no labels set to the current one
-
-    #TODO: next_image() gibt ein falsches Bild zurück, wenn vorher 'Go Back' verwendet wurde (Landfried)
-
-    # TODO: statt immer next image aufzurufen, muss das aktuelle Bild gespeichert werden, so dass es weiter verwendet werden kann
+    image = Image.objects.get(id=request.session.get('image'))
     Userlabels.objects.set_userlabels_str(image, user, answers)
 
 
@@ -136,6 +126,7 @@ def noIdea(request):
     image = Image.objects.get(id=request.session.get("image"))
     Userlabels.objects.set_uncertain(image, request.user, True)
     return render(request, 'proto/main.html', context=getPictureInformation(request, image))
+
 
 def noIdeaPrevious(request):
     image = Image.objects.get(id=request.session.get('currentPicture'))
@@ -148,6 +139,7 @@ def noToolVisible(request):
     setLabels(request, answers="")
     context = getPictureInformation(request, Image.objects.get(id=request.session.get("image")))
     return render(request, 'proto/main.html', context)
+
 
 def noToolPrevious(request):
     setLabels(request, answers="")
@@ -165,6 +157,7 @@ def getSelectedLabels(request):
     context = getPictureInformation(request, next_image)
     return render(request, 'proto/main.html', context)
 
+
 def getSelectedLabelsPrevious(request):
     for answer in request.POST.getlist('answer'):
         print(answer)
@@ -173,13 +166,13 @@ def getSelectedLabelsPrevious(request):
     context = getPictureInformation(request, pictureBefore)
     return render(request, 'proto/main.html', context)
 
+
 def goToPreviousImage(request):
     # save the current picture to be able to jump back
     request.session['currentPicture'] = request.session.get('image')
     image = Image.objects.get(id=request.session.get('image'))
     previous_image = Image.objects.previous_image(request.user, image)
-    # TODO: handover the information, that the previous picture was used
-    context = getPictureInformation(request, previous_image, previous = True)
+    context = getPictureInformation(request, previous_image, previous=True)
     return render(request, 'proto/main.html', context)
 
 
