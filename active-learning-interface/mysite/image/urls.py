@@ -19,6 +19,8 @@ urlpatterns = [
     path('noTools', views.noToolVisible, name='noTools'),
     path('dontKnow', views.noIdea, name="noIdea"),
     path('getSelectedLabelsPrevious', views.getSelectedLabelsPrevious, name="getSelectedLabelsPrevious"),
+    path('noToolPrevious', views.noToolPrevious, name="noToolPrevious"),
+    path('dontKnowPrevious', views.noIdeaPrevious, name="noIdeaPrevious"),
     # get annotations csv file
     path('annotations', views.annotations, name='annotations'),
     # upload variance from NN

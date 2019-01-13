@@ -137,11 +137,21 @@ def noIdea(request):
     Userlabels.objects.set_uncertain(image, request.user, True)
     return render(request, 'proto/main.html', context=getPictureInformation(request, image))
 
+def noIdeaPrevious(request):
+    image = Image.objects.get(id=request.session.get('currentPicture'))
+    Userlabels.objects.set_uncertain(image, request.user, True)
+    return render(request, 'proto/main.html', context=getPictureInformation(request, image))
+
 
 def noToolVisible(request):
     # if no tool is visible, just set all the selected labels to empty
     setLabels(request, answers="")
     context = getPictureInformation(request, Image.objects.get(id=request.session.get("image")))
+    return render(request, 'proto/main.html', context)
+
+def noToolPrevious(request):
+    setLabels(request, answers="")
+    context = getPictureInformation(request, Image.objects.get(id=request.session.get('currentPicture')))
     return render(request, 'proto/main.html', context)
 
 
