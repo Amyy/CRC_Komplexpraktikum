@@ -34,9 +34,16 @@
 
                                     {% endfor %}
                                 </div>
+                            {% if not previous %}
                                 <div class="field">
                                     <input type="submit" class="button is-link is-centered" value="OK" id="submitBtn">
                                 </div>
+                                {% else %}
+                                <div class="field">
+                                    <input type="submit" class="button is-link is-centered" value="in previous"
+                                    formaction="getSelectedLabelsPrevious">
+                                </div>
+                                {% endif %}
                                 <div class="field">
                                     <input type="submit" class="button is-link is-centered" value="no tool visible"
                                            formaction="noTools">

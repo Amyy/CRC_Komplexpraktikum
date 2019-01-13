@@ -14,11 +14,10 @@ def getImage(request):
     else:
         print("image exists in query")
         next_image = Image.objects.next_image(request.user, request.session.get('image'))
-
     request.session['image'] = next_image.id
     return next_image
 
-def getPictureInformation(request, image):
+def getPictureInformation(request, image, previous = False):
     if image == None:
         context = {
             'message' : 'noPics'
@@ -31,7 +30,8 @@ def getPictureInformation(request, image):
         'image': image,
         'labels': labels,
         'imageLabels': imagelabels,
-        'description': description
+        'description': description,
+        'previous' : previous
     }
     return context
 
@@ -155,12 +155,21 @@ def getSelectedLabels(request):
     context = getPictureInformation(request, next_image)
     return render(request, 'proto/main.html', context)
 
+def getSelectedLabelsPrevious(request):
+    for answer in request.POST.getlist('answer'):
+        print(answer)
+    setLabels(request, answers=request.POST.getlist('answer'))
+    pictureBefore = Image.objects.get(id=request.session.get('currentPicture'))
+    context = getPictureInformation(request, pictureBefore)
+    return render(request, 'proto/main.html', context)
+
 def goToPreviousImage(request):
-    # take the current image to get the previous one
+    # save the current picture to be able to jump back
+    request.session['currentPicture'] = request.session.get('image')
     image = Image.objects.get(id=request.session.get('image'))
     previous_image = Image.objects.previous_image(request.user, image)
     # TODO: handover the information, that the previous picture was used
-    context = getPictureInformation(request, previous_image)
+    context = getPictureInformation(request, previous_image, previous = True)
     return render(request, 'proto/main.html', context)
 
 
