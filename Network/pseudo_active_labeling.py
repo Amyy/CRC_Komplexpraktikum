@@ -58,6 +58,8 @@ import networks
 import losses
 import csv
 
+
+
 ################################################################################
 # Define parameters
 ################################################################################
@@ -68,6 +70,8 @@ trial_name = "Ins_AlexNet"
 
 output_path = "/mnt/g27prist/TCO/TCO-Studenten/wagnerame/testing_alexnet/"
 data_path = "/local_home/bodenstse/cholec80_1fps/frames/"
+data_path_train = "/mnt/g27prist/TCO/TCO-Studenten/wagnerame/CRC_Komplexpraktikum/Annotations/"
+
 
 rounds = 10
 #epochs = 100
@@ -112,8 +116,7 @@ thresh_prob = 0.5
 # test_ops = []
 
 labeled_opsets = []
-labeled_ops = [data_path + "1/02",
-               data_path + "1/04"]  # labeledset ca. 10%
+labeled_ops = [data_path_train + "4/57"]
 
 unlabeled_opsets = [data_path + "2/01",  # unlabeledset ca. 90% -> 9 times adding 10% = 100% at the end
                     data_path + "3/10"]
@@ -128,6 +131,10 @@ test_ops = ['/local_home/bodenstse/cholec80_1fps/frames/4/57']
 ################################################################################
 # Parse Comandline args
 ################################################################################
+
+
+
+
 opts = []
 try:
     opts, args = getopt.getopt(sys.argv[1:], "hdt:i:o:")
@@ -163,6 +170,12 @@ do_debug = '-d' in [e for e, _ in opts]
 # Define functions
 ################################################################################
 
+# .csv name as input
+def convert_path(path):
+    split = path.split('.')[0].split('-')
+    opset = split[len(split) - 2]
+    op = split[len(split) - 1]
+    return opset, op
 
 def write_to_log(log_data):
     """write data to log & console
@@ -249,6 +262,7 @@ def calculate_accuracy(prediction, label):
 ################################################################################
 # Prepare environment
 ################################################################################
+
 
 # output_path += trial_name + "_"
 #output_path += datetime.datetime.now().strftime("%Y.%m.%d-%H:%M") + "/"
