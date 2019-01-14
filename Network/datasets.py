@@ -17,12 +17,16 @@ import numpy as np
 import os
 
 
+
 class InstrumentDataset(data.Dataset):
     """InstrumentDataset
 
     A dataset managing images and instrument labels of Cholec80
 
     """
+
+    data_path = "/local_home/bodenstse/cholec80_1fps/frames/"
+
     def __init__(self,width,height,transform=None,preload=True,ops=None,opsets=None,modulo = 3):
         """Initializes a dataset
 
@@ -109,16 +113,21 @@ class InstrumentDataset(data.Dataset):
 
         for op in ops:
             f = open(op + "/Ins.csv", "r") # f.e. op == /local_home/bodenstse/cholec80_1fps/frames/4/57 ->
-            # f == /local_home/bodenstse/cholec80_1fps/frames/4/57/Ins.csv
+            # f == /local_home/bodenstse/cholec80_1fps/frames/4/57/Ins.csv || /mnt/g27prist/TCO/TCO-Studenten/wagnerame/CRC_Komplexpraktikum/Annotations/4/57/Ins.csv
 
-            #print(op)
             reader = csv.reader(f, delimiter=',') # reader: reads csv file
             for i, row in enumerate(reader):
                 if i % self.modulo == 0:
                     # print('row:', row) # row type: <class 'list'>, f.e. row: ['0', '0', '0', '0', '0', '0', '0', '0']
-                    path = op + "/%08d.png" % i # f.e. path: /local_home/bodenstse/cholec80_1fps/frames/1/02/00000000.png (for i == 0)
+
+                    # path = op + "/%08d.png" % i # f.e. path: /local_home/bodenstse/cholec80_1fps/frames/1/02/00000000.png (for i == 0)
+                    split = op.split('/')
+                    opset_nr = split[len(split) -2] # get opset number out of path: /mnt/g27prist/TCO/TCO-Studenten/wagnerame/CRC_Komplexpraktikum/Annotations/4/57
+                    op_nr = split[len(split) - 1]
+                    path = self.data_path + opset_nr + '/' + op_nr + "/%08d.png" % (int(row[0]) / 25)
                     label = np.array(row[1:], dtype=np.float32) # label type: <class 'numpy.ndarray'> , f.e. label: [0. 0. 0. 0. 0. 0. 0.]
                     self.add_sample(path,label)
+
 
     def load_opsets(self,opsets):
         """Loads a list of opset's into the dataset
