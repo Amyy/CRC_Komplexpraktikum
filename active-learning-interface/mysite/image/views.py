@@ -22,7 +22,7 @@ def getPictureInformation(request, image, previous=False):
             'message': 'noPics'
         }
         return context
-    imagelabels = Userlabels.objects.get_image_labels(image)
+    imagelabels = Userlabels.objects.get_image_labels(image, request.user)
     labels = Label.objects.all()
     description = image.description()
     context = {

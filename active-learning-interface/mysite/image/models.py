@@ -230,9 +230,12 @@ class userlabels_mangager(models.Manager):
             for i, image in enumerate(images):
                 Image.objects.filter(pk=image.pk).update(variance=variances[i])
 
-    def get_image_labels(self, image):
-        network_user = User.objects.get(username=NETWORK_USER)
-        nn_labels = Label.objects.filter(userlabels__author=network_user, userlabels__image=image)
+    def get_image_labels(self, image, user = User.objects.get(username=NETWORK_USER)):
+        userlabel = self.filter(author = user, image = image).first()
+        if not userlabel:
+            user = User.objects.get(username=NETWORK_USER)
+        #network_user = User.objects.get(username=NETWORK_USER)
+        nn_labels = Label.objects.filter(userlabels__author=user, userlabels__image=image)
         return nn_labels
 
 
