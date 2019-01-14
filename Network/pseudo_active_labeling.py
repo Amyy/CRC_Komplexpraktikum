@@ -73,9 +73,11 @@ data_path = "/local_home/bodenstse/cholec80_1fps/frames/"
 data_path_train = "/mnt/g27prist/TCO/TCO-Studenten/wagnerame/CRC_Komplexpraktikum/Annotations/"
 
 
-rounds = 10
+#rounds = 10
+rounds = 2
+
 #epochs = 100
-epochs = 1 # epochs set to 1 for test purpose
+epochs = 1
 
 new_labels_per_round = None  # gets calculated when unlabeledset is loaded
 num_var_samples = 10  # how many outputs are calculated to determine the variance
@@ -118,15 +120,15 @@ thresh_prob = 0.5
 labeled_opsets = []
 labeled_ops = [data_path_train + "4/57"]
 
-unlabeled_opsets = [data_path + "2/01",  # unlabeledset ca. 90% -> 9 times adding 10% = 100% at the end
-                    data_path + "3/10"]
-unlabeled_ops = [data_path + "1/34",
-                 data_path + "1/37",
-                 data_path + "1/38"
-                 ]
+#unlabeled_opsets = [data_path + "2/01",
+#                    data_path + "3/10"]
 
-test_opsets = [data_path + "4/07"] # data_path = "/local_home/bodenstse/cholec80_1fps/frames/"
-test_ops = ['/local_home/bodenstse/cholec80_1fps/frames/4/57']
+unlabeled_opsets = []
+unlabeled_ops = [data_path + "1/34"]
+
+test_opsets = []
+test_ops = [data_path + "1/64"]
+# test_ops = ['/local_home/bodenstse/cholec80_1fps/frames/4/57']
 
 ################################################################################
 # Parse Comandline args
