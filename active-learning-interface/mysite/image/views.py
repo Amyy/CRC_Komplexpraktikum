@@ -125,25 +125,30 @@ def setLabels(request, answers):
 def noIdea(request):
     image = Image.objects.get(id=request.session.get("image"))
     Userlabels.objects.set_uncertain(image, request.user, True)
-    return render(request, 'proto/main.html', context=getPictureInformation(request, image))
+    next_image = getImage(request)
+    return render(request, 'proto/main.html', context=getPictureInformation(request, next_image))
 
 
 def noIdeaPrevious(request):
-    image = Image.objects.get(id=request.session.get('currentPicture'))
+    image = Image.objects.get(id=request.session.get('image'))
     Userlabels.objects.set_uncertain(image, request.user, True)
-    return render(request, 'proto/main.html', context=getPictureInformation(request, image))
+    next_image = Image.objects.get(id=request.session.get("currentPicture"))
+    return render(request, 'proto/main.html', context=getPictureInformation(request, next_image))
 
 
 def noToolVisible(request):
     # if no tool is visible, just set all the selected labels to empty
     setLabels(request, answers="")
-    context = getPictureInformation(request, Image.objects.get(id=request.session.get("image")))
+    image = getImage(request)
+    context = getPictureInformation(request, image)
     return render(request, 'proto/main.html', context)
 
 
 def noToolPrevious(request):
     setLabels(request, answers="")
-    context = getPictureInformation(request, Image.objects.get(id=request.session.get('currentPicture')))
+    image = getImage(request)
+    next_image = Image.objects.get(id=request.session.get("currentPicture"))
+    context = getPictureInformation(request, next_image)
     return render(request, 'proto/main.html', context)
 
 
@@ -172,7 +177,7 @@ def goToPreviousImage(request):
     request.session['currentPicture'] = request.session.get('image')
     image = Image.objects.get(id=request.session.get('image'))
     previous_image = Image.objects.previous_image(request.user, image)
-    request.session['image'] = previous_image.id
+    request.session["image"] = previous_image.id
     context = getPictureInformation(request, previous_image, previous=True)
     return render(request, 'proto/main.html', context)
 
