@@ -44,10 +44,11 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader
-import sys, os
 
 import torchvision.transforms as transforms
 
+import os
+import sys
 import getopt
 import datetime
 import numpy as np
@@ -56,30 +57,26 @@ from shutil import copy2
 import datasets
 import networks
 import losses
-import csv
-
-
 
 ################################################################################
 # Define parameters
 ################################################################################
 preload_images = False  # load images to RAM once? else load from SSD every epoch
 trial_name = "Ins_AlexNet"
-# output_path = "/local_home/wagnerame/Komplexpraktikum/runs/"
-# data_path = "/local_home/bodenstse/cholec80_1fps/frames/"
-
 output_path = "/mnt/g27prist/TCO/TCO-Studenten/wagnerame/testing_alexnet/"
+
+#TODO: separate data_path and specific .csv path (maybe here: only give "4/57" to datasets.py
+
 data_path = "/local_home/bodenstse/cholec80_1fps/frames/"
-data_path_train = "/mnt/g27prist/TCO/TCO-Studenten/wagnerame/CRC_Komplexpraktikum/Annotations/"
+train_data_path = "/mnt/g27prist/TCO/TCO-Studenten/wagnerame/CRC_Komplexpraktikum/Annotations/"
 
+# rounds = 10
+rounds = 1
 
-#rounds = 10
-rounds = 2
+# epochs = 100
+epochs = 2
 
-#epochs = 100
-epochs = 1
-
-new_labels_per_round = None  # gets calculated when unlabeledset is loaded
+new_labels_per_round = None  # gets calculated when unlabledset is loaded
 num_var_samples = 10  # how many outputs are calculated to determine the variance
 
 batch_size = 128
@@ -87,56 +84,19 @@ width = 384
 height = 216
 num_classes = 7
 
-thresh_prob = 0.5
-
-# labeled_opsets = []
-# labeled_ops = [data_path + "1/02",  # labeledset ca. 10%
-#                data_path + "1/04",
-#                data_path + "1/06",
-#                data_path + "1/12",
-#                data_path + "1/24",
-#                data_path + "1/29"]
-#
-# unlabeled_opsets = [data_path + "2/",  # unlabeledset ca. 90% -> 9 times adding 10% = 100% at the end
-#                     data_path + "3/"]
-# unlabeled_ops = [data_path + "1/34",
-#                  data_path + "1/37",
-#                  data_path + "1/38",
-#                  data_path + "1/39",
-#                  data_path + "1/44",
-#                  data_path + "1/58",
-#                  data_path + "1/60",
-#                  data_path + "1/61",
-#                  data_path + "1/64",
-#                  data_path + "1/66",
-#                  data_path + "1/75",
-#                  data_path + "1/78",
-#                  data_path + "1/79",
-#                  data_path + "1/80"]
-#
-# test_opsets = [data_path + "4/"] # data_path = "/local_home/bodenstse/cholec80_1fps/frames/"
-# test_ops = []
-
 labeled_opsets = []
-labeled_ops = [data_path_train + "4/57"]
-
-#unlabeled_opsets = [data_path + "2/01",
-#                    data_path + "3/10"]
+labeled_ops = [data_path + "4/57"]
 
 unlabeled_opsets = []
+
 unlabeled_ops = [data_path + "1/34"]
 
 test_opsets = []
-test_ops = [data_path + "1/64"]
-# test_ops = ['/local_home/bodenstse/cholec80_1fps/frames/4/57']
+test_ops = [data_path + "4/07"]
 
 ################################################################################
 # Parse Comandline args
 ################################################################################
-
-
-
-
 opts = []
 try:
     opts, args = getopt.getopt(sys.argv[1:], "hdt:i:o:")
@@ -166,18 +126,11 @@ for opt, arg in opts:
         trial_name = arg
 
 do_debug = '-d' in [e for e, _ in opts]
-#do_debug = True # set debug mode default to True
 
 ################################################################################
 # Define functions
 ################################################################################
 
-# .csv name as input
-def convert_path(path):
-    split = path.split('.')[0].split('-')
-    opset = split[len(split) - 2]
-    op = split[len(split) - 1]
-    return opset, op
 
 def write_to_log(log_data):
     """write data to log & console
@@ -264,12 +217,8 @@ def calculate_accuracy(prediction, label):
 ################################################################################
 # Prepare environment
 ################################################################################
-
-
-# output_path += trial_name + "_"
-#output_path += datetime.datetime.now().strftime("%Y.%m.%d-%H:%M") + "/"
-model_name = trial_name + "_" + datetime.datetime.now().strftime("%Y.%m.%d-%H:%M")
-output_path += model_name + "/"
+output_path += trial_name + "_"
+output_path += datetime.datetime.now().strftime("%Y%m%d-%H%M") + "/"
 
 # replace existing folder
 if os.path.isdir(output_path):
@@ -301,11 +250,11 @@ transform = transforms.Compose(
 modulo = 1
 
 labeledset = datasets.InstrumentDataset(width, height, transform, preload=preload_images,
-                                        ops=labeled_ops, opsets=labeled_opsets, modulo=modulo)
+                                        ops=labeled_ops, opsets=labeled_opsets, modulo=modulo, labeled=True)
 lableled_loader = DataLoader(labeledset, batch_size=batch_size, shuffle=True, num_workers=7)
 
 unlabeledset = datasets.InstrumentDataset(width, height, transform, preload=preload_images,
-                                          ops=unlabeled_ops, opsets=unlabeled_opsets, modulo=modulo)
+                                          ops=unlabeled_ops, opsets=unlabeled_opsets, modulo=modulo, labeled=False)
 unlableled_loader = DataLoader(unlabeledset, batch_size=batch_size, shuffle=False, num_workers=7)
 
 testset = datasets.InstrumentDataset(width, height, transform, preload=True,  # preload_images, (always preload testset)
@@ -359,7 +308,7 @@ for round_nr in range(rounds):
         progress = 0
 
         """ iterate over labeledset
-            train the net by calculating predictions 
+            train the net by claculating predictions 
         """
         prediction = []
         target = []
@@ -431,8 +380,6 @@ for round_nr in range(rounds):
         test_acc = calculate_accuracy(prediction, target)
 
         # save epoch data
-        # TEST PRINT
-        # print('arrived at save funtion')
         epoch_dict = {}
         rawdata_dict = {}
         for i, path in enumerate(paths):
@@ -460,26 +407,16 @@ for round_nr in range(rounds):
         print_progress(i, len(test_loader))
 
         # prepare data
-        images, labels_cpu, path = data #  for one iterator round: return img, sample['labels'], sample['path']
+        images, labels_cpu, path = data
         images = images.to(device)
         labels = labels_cpu.to(device)
 
         # calculate net output with dropouts-> variance
-        batch_variance = np.zeros((labels.size(0), num_var_samples, num_classes)) #labels.size(0) == all labels of one batch, num_var_samples == 10, num_classes == 7
-
-        for var_nr in range(num_var_samples): # num_var_samples == 10
-            outputs_np = sig(net(images)).data.cpu().numpy() # OUTPUT von NETZ für ALLE IMAGES in einer batch
-
-            for sample_nr in range(len(outputs_np)): # len(outputs_np): 128 == batch_size
-                batch_variance[sample_nr][var_nr] = outputs_np[sample_nr] # batch_variance[0].size: 70 , batch_variance[0][0].size: 7
-
-            #     labels.size(0): 128
-            #     num_var_samples: 10
-            #     num_classes: 7
-            # len(outputs_np): (for one var_nr in num_var_samples): 128
-            # for sample_nr in range(len(outputs_np)):
-            #     outputs_np[sample_nr]: [0.72687554 0.22753797 0.72393167 0.12310091 0.15118773 0.45247307
-            #                             0.22790523]
+        batch_variance = np.zeros((labels.size(0), num_var_samples, num_classes))
+        for var_nr in range(num_var_samples):
+            outputs_np = sig(net(images)).data.cpu().numpy()
+            for sample_nr in range(len(outputs_np)):
+                batch_variance[sample_nr][var_nr] = outputs_np[sample_nr]
 
         # provide stats
         raw_variance.append(batch_variance)
@@ -492,44 +429,7 @@ for round_nr in range(rounds):
     paths = np.concatenate(paths)
 
     test_var_f1 = calculate_f1(np.mean(raw_variance, axis=1), target)
-    test_var_batch = np.var(raw_variance, axis=1)
-    test_mean_batch = np.mean(raw_variance, axis=1)
-
-    # middle value of the variances of every instrument
-    test_var_batch_merged = np.mean(test_var_batch, axis=1) # instruments: were axis 2 in test_var_batch
-
-    with open(('variances/var_' + model_name + '.csv'), 'w') as csv_variances:  # ! add date_time string
-
-        for sample_nr in range(len(test_var_batch)):
-
-            # variance for 7 instruments in one image each
-            # test_var_batch[sample_nr] # gives: instr variance for one image [0.00115019 0.00279964 0.00234942 0.00068003 0.00077934 0.00134419 0.00246692]
-            # one variance for 7 instruments in one image
-            # var_one_image = np.mean(var_instr_one_image)
-            # --> outcommented because too slow
-
-            # variance for all instruments in one image (already merged with test_mean_batch = np.mean(raw_variance, axis=1))
-            var_one_image = test_var_batch_merged[sample_nr]
-
-            # mean value of each instrument in one image
-            mean_list_one_image = test_mean_batch[sample_nr]
-
-            # convert probabilites above thresh_prob into 1
-            mean_list_one_image[mean_list_one_image >= thresh_prob] = 1
-            # convert probabilites below thresh_prob into 0
-            mean_list_one_image[mean_list_one_image < thresh_prob] = 0
-
-            # var_list_one_image = list(map(str, var_instr_one_image))
-            binary_list = list(map(str, mean_list_one_image))
-
-            filewriter = csv.writer(csv_variances, delimiter = ',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-
-            binary_list.insert(0, str(paths[sample_nr]))   # paths[sample_nr]: /local_home/bodenstse/cholec80_1fps/frames/4/57/00002629.png
-            binary_list.append(str(var_one_image))
-
-            filewriter.writerow(binary_list)
-
-    test_var = np.mean(test_var_batch, axis=0)
+    test_var = np.mean(np.var(raw_variance, axis=1), axis=0)
 
     # save variance data
     round_dict = {}
@@ -540,17 +440,12 @@ for round_nr in range(rounds):
     round_dict['raw'] = rawdata_dict
     round_dict['f1'] = test_var_f1
     round_dict['var'] = test_var
-    #print('test var', test_var)
     torch.save(round_dict, round_output_path + "testdata_variance.tar")
-    # '/local_home/bodenstse/cholec80_1fps/frames/4/19/00001217.png': {'label': array([0., 0., 1., 0., 0., 0., 0.], dtype=float32), 'var': array([[0.4417741 , 0.22692899, 0.60308313, 0.12556888, 0.27337235,
-    #    0.20510106, 0.1672729 ], ... }
-
 
     debug("\n")  # new line after progress bar
     write_to_log("         Test (var_f1 %.3f, var [%.5f %.5f %.5f %.5f %.5f %.5f %.5f])\n"
                  % (test_var_f1, test_var[0], test_var[1], test_var[2],
                     test_var[3], test_var[4], test_var[5], test_var[6]))
-
 
     """ iterate over unlabeledset (once per round)
                   calculate variance on unlabeled data
