@@ -25,6 +25,7 @@ class InstrumentDataset(data.Dataset):
 
     """
 
+    # TODO: add .csv path, separated from data path
     data_path = Path('/local_home/bodenstse/cholec80_1fps/frames')
 
     def __init__(self,width,height,transform=None,preload=True,ops=None,opsets=None,modulo = 3, labeled=True):
@@ -96,7 +97,7 @@ class InstrumentDataset(data.Dataset):
         image_path = path
 
         if self.labeled:
-            parts = path.parts
+            parts = Path(path).parts
             image_path = self.data_path / parts[-3] / parts[-2] / parts[-1]
 
         print('image path', str(image_path))
@@ -157,6 +158,10 @@ class InstrumentDataset(data.Dataset):
                 # load all images out of folder EXCEPT .csv file
                 images_paths = [x for x in Path(op).glob("*") if x not in Path(op).glob("*.csv")]
 
+                # TODO: open .csv from separate .csv path -> load only images from data_path
+                # TODO: insert delete function again, but load .csv from specfic .csv path
+
+                """
                 f = open(op + "/Ins.csv", "r")
 
                 reader = csv.reader(f, delimiter=',') # reader: reads csv file
@@ -169,8 +174,7 @@ class InstrumentDataset(data.Dataset):
                         labeled_image_path.append(self.data_path / opset_nr / op_nr / ("%08d.png" % (int(row[0]) / 25)))
 
                 images_paths = [x for x in images_paths if x not in labeled_image_path]
-
-
+                """
 
                 for image_path in images_paths:
 
