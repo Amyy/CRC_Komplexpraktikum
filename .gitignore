@@ -1,5 +1,5 @@
 
-active-learning-interface/mysite/db.sqlite3
+# active-learning-interface/mysite/db.sqlite3
 active-learning-interface/.idea/workspace.xml
 */.idea/*
 *.ipynb
