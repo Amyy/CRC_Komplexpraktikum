@@ -182,6 +182,37 @@ def goToPreviousImage(request):
     return render(request, 'proto/main.html', context)
 
 
+def goToOverview(request):
+    print(" In overview ")
+    labeled_imgs =  Image.objects.get_labeled_images(request.user, 20)
+    image_descriptions = []
+
+    for im in labeled_imgs:
+        image_descriptions.append(im.image)
+
+    context = {
+        'images' :  image_descriptions
+    }
+
+    return render(request, 'proto/overview.html', context)
+
+def goToImage(request):
+
+    image = request.POST.get('clickedimage')
+    img = Image.objects.get(name=image)
+    print("IMAGE IS ")
+    print(image)
+    print(img)
+    if img == None:
+        print(" it is none!")
+
+
+    context = getPictureInformation(request,img)
+
+    return render(request, 'proto/main.html', context)
+
+
+
 def annotations(request):
     # Create the HttpResponse object with the appropriate CSV header.
     response = HttpResponse(content_type='text/csv')
