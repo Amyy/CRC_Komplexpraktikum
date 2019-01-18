@@ -69,10 +69,10 @@ output_path = "/mnt/g27prist/TCO/TCO-Studenten/wagnerame/testing_alexnet/"
 #TODO: separate data_path and specific .csv path (maybe here: only give "4/57" to datasets.py
 
 # rounds = 10
-rounds = 1
+rounds = 2
 
 # epochs = 100
-epochs = 2
+epochs = 1
 
 new_labels_per_round = None  # gets calculated when unlabledset is loaded
 num_var_samples = 10  # how many outputs are calculated to determine the variance
@@ -494,5 +494,8 @@ for round_nr in range(rounds):
         rawdata_dict[path] = raw_variance[i]
     unlabeled_dict['raw'] = rawdata_dict
     unlabeled_dict['mean_var'] = np.mean(np.var(raw_variance, axis=1))
+
+    #TODO: in csv ausgeben
+    print('varianzen pro bild', unlabeled_dict['mean_var'])
     unlabeled_dict['selected'] = selected_dict
     torch.save(unlabeled_dict, round_output_path + "unlabeled_variance.tar")
