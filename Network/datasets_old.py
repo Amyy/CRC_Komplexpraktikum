@@ -187,8 +187,6 @@ class InstrumentDataset(data.Dataset):
                         label = np.zeros(7, dtype=np.float32)
                         self.add_sample(image_path, label)
 
-                        #print(image_path)
-
 
     def load_opsets(self,opsets):
         """Loads a list of opset's into the dataset

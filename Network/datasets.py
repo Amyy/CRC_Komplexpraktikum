@@ -114,9 +114,6 @@ class InstrumentDataset(data.Dataset):
         for op in ops:
             f = open(csv_path + op + "/Ins.csv", "r")
 
-            print('op (should be 4/57 f.e.)', op)
-            print('.csv Path: ', csv_path + op + "/Ins.csv")
-
             reader = csv.reader(f, delimiter=',')
             labels = []
             labeled_img_paths = []
@@ -138,12 +135,10 @@ class InstrumentDataset(data.Dataset):
                     #print('LABELS for labeled img', labels[i])
             else:
                 # add all images of dataset, remove already labeled ones
-                print("labeled_image_paths:", labeled_img_paths)
                 images_paths = [x for x in Path(data_path + op).glob("*") if (x not in Path(data_path + op).glob("*.csv")) and (str(x) not in labeled_img_paths)]
 
                 for path in images_paths:
                     self.add_sample(str(path), zero_label)
-                    #print('UNLABELED image path', path)
 
 
     def load_opsets(self,opsets):
