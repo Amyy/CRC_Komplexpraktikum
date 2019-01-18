@@ -462,8 +462,9 @@ for round_nr in range(rounds):
         labels = labels_cpu.to(device)
 
         # calculate net output with dropouts-> variance
-        batch_variance = np.zeros((labels.size(0), num_var_samples, num_classes))
-        for i in range(num_var_samples):
+        batch_variance = np.zeros((labels.size(0), num_var_samples, num_classes)) # labels.size(0) == all labels of one batch, num_var_samples == 10, num_classes == 7
+
+        for i in range(num_var_samples): # num_var_samples == 10
             outputs_np = sig(net(images)).data.cpu().numpy()
             for sample_nr in range(len(outputs_np)):
                 batch_variance[sample_nr][i] = outputs_np[sample_nr]
