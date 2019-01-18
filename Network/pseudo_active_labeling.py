@@ -57,6 +57,7 @@ from shutil import copy2
 import datasets
 import networks
 import losses
+from datasets import data_path
 
 ################################################################################
 # Define parameters
@@ -66,9 +67,6 @@ trial_name = "Ins_AlexNet"
 output_path = "/mnt/g27prist/TCO/TCO-Studenten/wagnerame/testing_alexnet/"
 
 #TODO: separate data_path and specific .csv path (maybe here: only give "4/57" to datasets.py
-
-data_path = "/local_home/bodenstse/cholec80_1fps/frames/"
-train_data_path = "/mnt/g27prist/TCO/TCO-Studenten/wagnerame/CRC_Komplexpraktikum/Annotations/"
 
 # rounds = 10
 rounds = 1
@@ -85,14 +83,14 @@ height = 216
 num_classes = 7
 
 labeled_opsets = []
-labeled_ops = [data_path + "4/57"]
+labeled_ops = ["4/57"]
 
 unlabeled_opsets = []
 
-unlabeled_ops = [data_path + "1/34"]
+unlabeled_ops = ["1/34"]
 
 test_opsets = []
-test_ops = [data_path + "4/07"]
+test_ops = ["4/07"]
 
 ################################################################################
 # Parse Comandline args
@@ -299,6 +297,7 @@ for round_nr in range(rounds):
     labels = labeledset.get_labels()
     pos_count = np.sum(labels, axis=0)
     neg_count = (len(labeledset) - pos_count)
+    print("pos:", pos_count, "neg:", neg_count)
     pos_weight = torch.Tensor(neg_count / pos_count).cuda()
     criterion.set_pos_weight(pos_weight)
     write_to_log("pos_weight: " + str(pos_weight.data.cpu().numpy()) + "\n")
@@ -486,7 +485,7 @@ for round_nr in range(rounds):
         path, label = unlabeledset.del_sample_by_path(unlabeledset_list.pop(0)[1])
         labeledset.add_sample(path, label)
         selected_dict[path] = label
-        debug("Added %s to labeledset. %s" % (path, str(label)))
+        #debug("Added %s to labeledset. %s" % (path, str(label)))
 
     # save variance of unlabeled data
     unlabeled_dict = {}
