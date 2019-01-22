@@ -57,6 +57,8 @@ from shutil import copy2
 import datasets
 import networks
 import losses
+import csv
+
 from datasets import data_path
 
 ################################################################################
@@ -65,14 +67,16 @@ from datasets import data_path
 preload_images = False  # load images to RAM once? else load from SSD every epoch
 trial_name = "Ins_AlexNet"
 output_path = "/mnt/g27prist/TCO/TCO-Studenten/wagnerame/testing_alexnet/"
-
-#TODO: separate data_path and specific .csv path (maybe here: only give "4/57" to datasets.py
+model_name = trial_name + "_" + datetime.datetime.now().strftime("%Y.%m.%d-%H:%M")
 
 # rounds = 10
 rounds = 2
 
 # epochs = 100
 epochs = 1
+
+# threshold when instrument is set to "visible" (==1) or "not visible (==0)
+thresh_prob = 0.5
 
 new_labels_per_round = None  # gets calculated when unlabledset is loaded
 num_var_samples = 10  # how many outputs are calculated to determine the variance
@@ -466,37 +470,85 @@ for round_nr in range(rounds):
 
         for i in range(num_var_samples): # num_var_samples == 10
             outputs_np = sig(net(images)).data.cpu().numpy()
-            for sample_nr in range(len(outputs_np)):
-                batch_variance[sample_nr][i] = outputs_np[sample_nr]
+            for sample_nr in range(len(outputs_np)): # len(outputs_np): 128 == batch_size
+                batch_variance[sample_nr][i] = outputs_np[sample_nr]  # batch_variance[0].size: 70 , batch_variance[0][0].size: 7
 
-        raw_variance.append(batch_variance)
+                #     labels.size(0): 128
+                #     num_var_samples: 10
+                #     num_classes: 7
+                # len(outputs_np): (for one var_nr in num_var_samples): 128
+                # for sample_nr in range(len(outputs_np)):
+                #     outputs_np[sample_nr]: [0.72687554 0.22753797 0.72393167 0.12310091 0.15118773 0.45247307
+                #                             0.22790523]
+
+        raw_variance.append(batch_variance) # add one batch to raw_variance
         paths.append(path)
 
-    raw_variance = np.concatenate(raw_variance)
+    raw_variance = np.concatenate(raw_variance) # merge lists with batch_variances to one list
     paths = np.concatenate(paths)
 
+    all_variances = np.mean(np.var(raw_variance, axis=1), axis=1)
+    mean_prob_rounds = np.mean(raw_variance, axis=1)
+    #var_batch_merged = np.mean(all_variances, axis=1)  # instruments: were axis 2 in test_var_batch
+
+    with open(('variances/var_' + model_name + '.csv'), 'w') as csv_variances:  # ! add date_time string
+
+        filewriter = csv.writer(csv_variances, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+
+        for sample_nr in range(len(all_variances)):
+
+            # variance for 7 instruments in one image each
+            # test_var_batch[sample_nr] # gives: instr variance for one image [0.00115019 0.00279964 0.00234942 0.00068003 0.00077934 0.00134419 0.00246692]
+            # one variance for 7 instruments in one image
+            # var_one_image = np.mean(var_instr_one_image)
+            # --> outcommented because too slow
+
+            # variance for all instruments in one image (already merged with test_mean_batch = np.mean(raw_variance, axis=1))
+            var_one_image = all_variances[sample_nr]
+
+            # mean value of each instrument in one image
+            mean_list_one_image = mean_prob_rounds[sample_nr]
+
+            # convert probabilites above thresh_prob into 1
+            mean_list_one_image[mean_list_one_image >= thresh_prob] = 1
+            # convert probabilites below thresh_prob into 0
+            mean_list_one_image[mean_list_one_image < thresh_prob] = 0
+
+            # var_list_one_image = list(map(str, var_instr_one_image))
+            binary_list = list(map(str, mean_list_one_image))
+
+            binary_list.insert(0, str(paths[sample_nr]))   # paths[sample_nr]: /local_home/bodenstse/cholec80_1fps/frames/4/57/00002629.png
+            binary_list.append(str(var_one_image))
+
+            filewriter.writerow(binary_list)
+
+
+
+
     # select images to be labeled
-    selected_dict = {}
-    unlabeledset_list = sorted([(variance, paths[i]) for i, variance in enumerate(np.var(raw_variance, axis=1))],
-                               key=lambda x: np.max(x[0]), reverse=True)
+    # selected_dict = {}
+    # unlabeledset_list = sorted([(variance, paths[i]) for i, variance in enumerate(np.var(raw_variance, axis=1))],
+    #                            key=lambda x: np.max(x[0]), reverse=True)
+    #
+    # print(np.max(unlabeledset_list[0][0]), np.max(unlabeledset_list[-1][0]))
+    #
+    # for _ in range(min(new_labels_per_round, len(unlabeledset_list))):
+    #     path, label = unlabeledset.del_sample_by_path(unlabeledset_list.pop(0)[1])
+    #     labeledset.add_sample(path, label)
+    #     selected_dict[path] = label
+    #     #debug("Added %s to labeledset. %s" % (path, str(label)))
+    #
+    # # save variance of unlabeled data
+    # unlabeled_dict = {}
+    # rawdata_dict = {}
+    # for i, path in enumerate(paths):
+    #     rawdata_dict[path] = raw_variance[i]
+    # unlabeled_dict['raw'] = rawdata_dict
+    #
+    # # np.var(raw_variance, axis=1) -> calculate variance over probabilities of ONE image in the raw_variance list
+    # unlabeled_dict['mean_var'] = np.mean(np.var(raw_variance, axis=1))
+    #
+    # print('varianzen pro bild', unlabeled_dict['mean_var'])
+    # unlabeled_dict['selected'] = selected_dict
+    # torch.save(unlabeled_dict, round_output_path + "unlabeled_variance.tar")
 
-    print(np.max(unlabeledset_list[0][0]), np.max(unlabeledset_list[-1][0]))
-
-    for _ in range(min(new_labels_per_round, len(unlabeledset_list))):
-        path, label = unlabeledset.del_sample_by_path(unlabeledset_list.pop(0)[1])
-        labeledset.add_sample(path, label)
-        selected_dict[path] = label
-        #debug("Added %s to labeledset. %s" % (path, str(label)))
-
-    # save variance of unlabeled data
-    unlabeled_dict = {}
-    rawdata_dict = {}
-    for i, path in enumerate(paths):
-        rawdata_dict[path] = raw_variance[i]
-    unlabeled_dict['raw'] = rawdata_dict
-    unlabeled_dict['mean_var'] = np.mean(np.var(raw_variance, axis=1))
-
-    #TODO: in csv ausgeben
-    print('varianzen pro bild', unlabeled_dict['mean_var'])
-    unlabeled_dict['selected'] = selected_dict
-    torch.save(unlabeled_dict, round_output_path + "unlabeled_variance.tar")
