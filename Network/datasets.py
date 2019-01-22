@@ -10,7 +10,7 @@
 
 __author__ = "Alexander Jenke" 
 
-from PIL import Image
+from PIL import Image, ImageFile
 import torch.utils.data as data
 import csv
 import numpy as np
@@ -64,6 +64,7 @@ class InstrumentDataset(data.Dataset):
         :return: PIL Image
 
         """
+        ImageFile.LOAD_TRUNCATED_IMAGES = True
         im = Image.open(path)
         height2 = int(self.width * (im.height / im.width))
         offset_y = (self.height - height2) // 2
@@ -112,33 +113,52 @@ class InstrumentDataset(data.Dataset):
         """
         zero_label = np.zeros(7, dtype=np.float32)
         for op in ops:
-            f = open(csv_path + op + "/Ins.csv", "r")
+            print("loading op", op, "labeled:", self.labeled)
+            #with open(csv_path + op + "/Ins.csv", "r") as f:
+            try:
+                f = open(csv_path + op + "/Ins.csv", "r")
+                
+            except FileNotFoundError:
+                # no csv exists
+                if not self.labeled:
 
-            reader = csv.reader(f, delimiter=',')
-            labels = []
-            labeled_img_paths = []
-            for i, row in enumerate(reader):
+                    # add all images of dataset, remove already labeled ones
+                    images_paths = [x for x in Path(data_path + op).glob("*") if (x not in Path(data_path + op).glob("*.csv"))]
+                    print('images_paths',images_paths)
+                    quit()
 
-                # Generate path to image (out of .csv)
-                path = data_path + op + "/%08d.png" % (int(row[0]) / 25)
-                label = np.array(row[1:], dtype=np.float32)
-                # add labels to labellist
-                labels.append(label)
-                # add pathes to labeled images in list
-                labeled_img_paths.append(path)
+                    for path in images_paths:
+                        self.add_sample(str(path), zero_label)
 
-            if self.labeled:
-                # add sample for labeled images only
-                for i in range(len(labels)):
-                    self.add_sample(labeled_img_paths[i], labels[i])
-                    #print('LABELED image path', labeled_img_paths[i])
-                    #print('LABELS for labeled img', labels[i])
             else:
-                # add all images of dataset, remove already labeled ones
-                images_paths = [x for x in Path(data_path + op).glob("*") if (x not in Path(data_path + op).glob("*.csv")) and (str(x) not in labeled_img_paths)]
+                # csv exists
 
-                for path in images_paths:
-                    self.add_sample(str(path), zero_label)
+                reader = csv.reader(f, delimiter=',')
+                labels = []
+                labeled_img_paths = []
+                for i, row in enumerate(reader):
+
+                    # Generate path to image (out of .csv)
+                    path = data_path + op + "/%08d.png" % (int(row[0]) / 25)
+                    label = np.array(row[1:], dtype=np.float32)
+                    # add labels to labellist
+                    labels.append(label)
+                    # add pathes to labeled images in list
+                    labeled_img_paths.append(path)
+
+                if self.labeled:
+                    # add sample for labeled images only
+                    for i in range(len(labels)):
+                        self.add_sample(labeled_img_paths[i], labels[i])
+                        #print('LABELED image path', labeled_img_paths[i])
+                        #print('LABELS for labeled img', labels[i])
+                else:
+                    # add all images of dataset, remove already labeled ones
+                    images_paths = [x for x in Path(data_path + op).glob("*") if (x not in Path(data_path + op).glob("*.csv")) and (str(x) not in labeled_img_paths)]
+
+                    for path in images_paths:
+                        self.add_sample(str(path), zero_label)
+
 
 
     def load_opsets(self,opsets):
@@ -151,7 +171,8 @@ class InstrumentDataset(data.Dataset):
         """
         ops = []
         for opset in opsets:
-            ops += [os.path.join(opset, dI) for dI in os.listdir(opset) if os.path.isdir(os.path.join(opset, dI))]
+            opset_path = data_path + opset
+            ops += [os.path.join(opset, dI) for dI in os.listdir(opset_path) if os.path.isdir(os.path.join(opset_path, dI))]
         self.load_ops(ops)
 
     def __getitem__(self, index):
