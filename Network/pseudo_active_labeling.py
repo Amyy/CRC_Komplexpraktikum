@@ -87,11 +87,10 @@ height = 216
 num_classes = 7
 
 labeled_opsets = []
-labeled_ops = ["4/57"]
+labeled_ops = ["4/07"]
 
-unlabeled_opsets = []
-
-unlabeled_ops = ["1/34"]
+unlabeled_opsets = ["1"]
+unlabeled_ops = []
 
 test_opsets = []
 test_ops = ["4/07"]
