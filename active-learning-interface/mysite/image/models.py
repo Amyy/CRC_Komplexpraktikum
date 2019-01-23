@@ -4,9 +4,11 @@ from django.db import transaction
 import numpy
 import csv
 import math
+import pathlib
 
 FRAME_FREQ = 25
 NETWORK_USER = 'network'
+IMAGE_PATH = Path('/frames')
 
 
 class image_manager(models.Manager):
@@ -256,6 +258,10 @@ class Image(models.Model):
         descr = ''
         descr += str(self.name)
         return descr
+
+    def get_path(self):
+        path = IMAGE_PATH / Path(self.opset) / Path(self.op) / Path(self.name + '.png')
+        return str(path)
 
 class Label(models.Model):
     name = models.CharField(max_length=50)
