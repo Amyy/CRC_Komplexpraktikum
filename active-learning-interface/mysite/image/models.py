@@ -8,7 +8,7 @@ import pathlib
 
 FRAME_FREQ = 25
 NETWORK_USER = 'network'
-IMAGE_PATH = Path('/frames')
+IMAGE_PATH = pathlib.Path('/frames')
 
 
 class image_manager(models.Manager):
