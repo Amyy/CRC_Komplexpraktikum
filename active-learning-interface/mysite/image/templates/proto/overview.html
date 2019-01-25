@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>bulma cards</title>
+    <title>Overview</title>
     <link rel="shortcut icon" href="../images/fav_icon.png" type="image/x-icon">
     <link rel='stylesheet prefetch' href='https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.2/css/bulma.css'>
     <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"
@@ -25,45 +25,32 @@
         <span class="flow-3"></span>
     </div>
     <div class="section">
-        <div class="box">
-            <div class="field has-addons">
-                <div class="control is-expanded">
-                    <input class="input has-text-centered" type="search" placeholder="» » » » » » find me « « « « « «">
-                </div>
-                <div class="control">
-                    <a class="button is-info">Search</a>
-                </div>
-            </div>
-        </div>
-        <!-- Developers -->
 
         <div class="row columns">
             {% for image in images %}
-
-            <div>{{image}}</div>
-
+             <!-- <div>{{image}}</div> -->
             <div class="column is-one-third">
                 <div class="card large">
-
                     <div class="card-image">
                         <figure >
-                             <img src="{{image.data.url}}" class="imagee" alt="Image" style="width:352x; height:334px">
+                             <img src="{{image.data.url}}" class="imagee" alt="Image" style="display: block; margin: 0 auto;width:352x; height:334px; margin-bottom: 5px">
                         </figure>
                         <form action="goToImage" class="edit" method="POST">
                             {% csrf_token %}
-
                             <!-- for testing: checkbox instead of hidden -->
                             <input type="hidden" class="imagee" value="{{ image }}" >
-                            <input type="submit" value="Edit image" class="btn">
+                            <input type="submit" value="Edit image"  style="display: block; margin: 0 auto;">
                         </form>
-
-
-
                     </div>
 
                 </div>
             </div>
-            {% endfor %}
+             {% if forloop.counter|divisibleby:3 %}
+        </div>
+
+         <div class="row columns">
+              {% endif %}
+             {% endfor %}
         </div>
 
 
