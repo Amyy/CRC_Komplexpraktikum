@@ -1,5 +1,6 @@
 import requests
-import sys
+import pathlib
+import os
 
 class req:
     def post(self, path):
@@ -43,11 +44,20 @@ class req:
         op = sys.argv[2]
         """
 
-        ### url, an die csv hochgeladen wird
+        print("Get", opset, op, "data")
+
+        ### url, an die csv heruntergeladen wird
         url = 'http://localhost:8000/image/csv/' + str(opset) + '/' + str(op) + '/'
 
-        ### 'file.cs' Pfad zur Datei, die hochgeladen wird
-        file = open('labels-' + str(opset) + '-' + str(op) + '.csv', 'wb')
+        ### Pfad zur Datei, die heruntergeladen wird
+        path = pathlib.Path("../../Annotations/") / pathlib.Path(str(opset)) / pathlib.Path(str(op))
+
+        #file = open('labels-' + str(opset) + '-' + str(op) + '.csv', 'wb')
+
+        if not os.path.exists(str(path)):
+            os.makedirs(str(path))
+
+        file = open(str(path / pathlib.Path('Ins.csv')), 'wb')
 
         r = requests.get(url, allow_redirects=True)
         print(r)
