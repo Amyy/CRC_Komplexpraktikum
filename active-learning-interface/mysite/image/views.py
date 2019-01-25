@@ -178,7 +178,7 @@ def goToPreviousImage(request):
     image = Image.objects.get(id=request.session.get('image'))
     previous_image = Image.objects.previous_image(request.user, image)
     request.session["image"] = previous_image.id
-    context = getPictureInformation(request, previous_image, previous=True)
+    context = getPictureInformation(request, previous_image, previous=False)
     return render(request, 'proto/main.html', context)
 
 
