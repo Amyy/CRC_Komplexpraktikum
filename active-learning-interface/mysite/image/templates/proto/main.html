@@ -34,9 +34,9 @@
 
                                     {% endfor %}
                                 </div>
-                                {% if not previous %}
+
                                     <div class="field">
-                                        <input type="submit" class="button is-link is-centered" value="OK start"
+                                        <input type="submit" class="button is-link is-centered" value="OK"
                                                id="submitBtn">
                                     </div>
                                     <div class="field">
@@ -50,23 +50,6 @@
                                     <input type="submit" class="button is-link is-centered" value="Overview"
                                            formaction="goToOverview">
                                     </div>
-                                {% else %}
-                                    <div class="field">
-                                        <input type="submit" class="button is-link is-centered" value="OK prev"
-                                               formaction="getSelectedLabelsPrevious">
-                                    </div>
-                                    <div class="field">
-
-                                        <input type="submit" class="button is-link is-centered" value="no tool visible"
-                                               formaction="noToolPrevious">
-                                        <input type="submit" class="button is-link is-centered" value="I don't know"
-                                               formaction="dontKnowPrevious">
-                                        <input type="submit" class="button is-link is-centered" value="Go back"
-                                               formaction="goToPreviousImage">
-                                        <input type="submit" class="button is-link is-centered" value="Overview"
-                                           formaction="goToOverview">
-                                    </div>
-                                {% endif %}
 
 
                             </div>

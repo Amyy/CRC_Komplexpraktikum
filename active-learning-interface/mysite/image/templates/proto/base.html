@@ -10,7 +10,6 @@
     <link static href="{% static 'css/bulma-0.7.2/css/bulma-switch.min.css' %}" rel="stylesheet">
     <link static href="{% static 'css/myStyle.css' %}" rel="stylesheet">
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
-    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
 
 </head>
 <body>
@@ -25,12 +24,18 @@
         {% if request.path != "/image/" and request.path != "/image/logout_view" and user.is_authenticated %}
             <section class="is-pulled-left">
                 <a href="showChangePassword" class="icon-block">
-                    <i class="fas fa-cog fa-2x" title="change password"></i>
+                    <figure class="image is-48x48">
+                            <img src="{% static 'icons/fa-cog.png' %}">
+
+                        </figure>
                 </a>
             </section>
             <section class="is-pulled-right">
                 <a href="{% url 'logout_view' %}" class="icon-block">
-                    <i class="fas fa-sign-out-alt fa-3x" title="logout"></i>
+                    <figure class="image is-48x48">
+                            <img src="{% static 'icons/sign-out.png' %}">
+
+                        </figure>
                 </a>
             </section>
         {% endif %}

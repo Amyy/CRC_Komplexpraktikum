@@ -128,29 +128,12 @@ def noIdea(request):
     next_image = getImage(request)
     return render(request, 'proto/main.html', context=getPictureInformation(request, next_image))
 
-
-def noIdeaPrevious(request):
-    image = Image.objects.get(id=request.session.get('image'))
-    Userlabels.objects.set_uncertain(image, request.user, True)
-    next_image = Image.objects.get(id=request.session.get("currentPicture"))
-    return render(request, 'proto/main.html', context=getPictureInformation(request, next_image))
-
-
 def noToolVisible(request):
     # if no tool is visible, just set all the selected labels to empty
     setLabels(request, answers="")
     image = getImage(request)
     context = getPictureInformation(request, image)
     return render(request, 'proto/main.html', context)
-
-
-def noToolPrevious(request):
-    setLabels(request, answers="")
-    image = getImage(request)
-    next_image = Image.objects.get(id=request.session.get("currentPicture"))
-    context = getPictureInformation(request, next_image)
-    return render(request, 'proto/main.html', context)
-
 
 def getSelectedLabels(request):
     # get the checked checkboxes
@@ -160,15 +143,6 @@ def getSelectedLabels(request):
     # TODO: get the next picture (not only the next description) and present it to the user
     next_image = getImage(request)
     context = getPictureInformation(request, next_image)
-    return render(request, 'proto/main.html', context)
-
-
-def getSelectedLabelsPrevious(request):
-    for answer in request.POST.getlist('answer'):
-        print(answer)
-    setLabels(request, answers=request.POST.getlist('answer'))
-    pictureBefore = Image.objects.get(id=request.session.get('currentPicture'))
-    context = getPictureInformation(request, pictureBefore)
     return render(request, 'proto/main.html', context)
 
 
