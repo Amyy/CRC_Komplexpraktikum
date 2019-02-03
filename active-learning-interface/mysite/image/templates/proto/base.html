@@ -24,7 +24,7 @@
         {% if request.path != "/image/" and request.path != "/image/logout_view" and user.is_authenticated %}
             <section class="is-pulled-left">
                 <a href="showChangePassword" class="icon-block">
-                    <figure class="image is-48x48">
+                    <figure class="image is-48x48" title="change password">
                             <img src="{% static 'icons/fa-cog.png' %}">
 
                         </figure>
@@ -33,12 +33,19 @@
             <section class="is-pulled-right">
                 <a href="{% url 'logout_view' %}" class="icon-block">
                     <figure class="image is-48x48">
-                            <img src="{% static 'icons/sign-out.png' %}">
+                            <img src="{% static 'icons/sign-out.png' %}" title="logout">
 
                         </figure>
                 </a>
             </section>
         {% endif %}
+            <div class="container has-icon">
+                <a href="readme" class="icon-block">
+                    <figure class="image is-48x48">
+                        <img src="{% static 'icons/question.png' %}" title="help">
+                    </figure>
+                </a>
+            </div>
     </div>
 </section>
 {% block content %}

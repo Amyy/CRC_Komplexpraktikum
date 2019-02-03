@@ -20,7 +20,7 @@ urlpatterns = [
     path('dontKnow', views.noIdea, name="noIdea"),
     path('goToOverview', views.goToOverview, name='goToOverview'),
     path('goToImage', views.goToImage, name='goToImage'),
-
+    path('readme', views.readme, name='readMe'),
     # get annotations csv file
     path('annotations', views.annotations, name='annotations'),
     # upload variance from NN

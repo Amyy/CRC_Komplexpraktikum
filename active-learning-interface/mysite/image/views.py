@@ -1,10 +1,11 @@
 from django.shortcuts import render, redirect
 from .models import Image, Label, Userlabels
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 import datetime
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.hashers import check_password
+
 
 
 def getImage(request):
@@ -185,6 +186,8 @@ def goToImage(request):
 
     return render(request, 'proto/main.html', context)
 
+def readme(request):
+    return render(request, 'proto/readme.html')
 
 
 def annotations(request):
