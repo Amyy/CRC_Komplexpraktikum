@@ -1,0 +1,32 @@
+{% extends 'proto/base.html' %}
+{% block title %} Readme {% endblock %}
+{% block content %}
+<div class="columns">
+            <div class="column">
+
+                <section class="section is-centered">
+                    <div class="field has-text-centered">
+                                <a href="{% url 'main' %}">Go back</a>
+                            </div>
+                    This Website has the purpose to help with training a neuronal network on classifying
+                    images of Operations. These pictures show moments of an operation. The network is
+                    unsure about the shown pictures, so by labelling pictures, results of labeling new
+                    images will improve. It does not matter, if you can only label one picture, a
+                    handful or more pictures. <br>
+                    To get access to the Website, please contact: <br>
+                    <br>
+                    Example pictures of the tools that can be selected:
+                    <ul>
+                        <li>Grasper</li>
+                        <li>Bipolar</li>
+                        <li>Hook</li>
+                        <li>Scissors</li>
+                        <li>Clipper</li>
+                        <li>Irrigator</li>
+                        <li>Specimen Bag</li>
+                    </ul>
+                </section>
+            </div>
+</div>
+
+{%  endblock %}
