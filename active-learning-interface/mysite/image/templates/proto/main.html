@@ -1,79 +1,82 @@
 {% extends 'proto/base.html' %}
 {% block title %} Home {% endblock %}
 {% block content %}
-    {% if user.is_authenticated %}
-        <body onload="setLabels()">
-        <div class="columns">
-            <div class="column">
+{% load static %}
+{% if user.is_authenticated %}
+<body onload="setLabels()">
+<div class="columns">
+    <div class="column">
 
-                <section class="section is-centered">
-                    <div class="level-item has-image-centered">
-                        <figure class="image is-256by256">
-                            <img src="{{ image.data.url }}">
-                            <figcaption>description: {{ description }}</figcaption>
-                        </figure>
-                    </div>
-                </section>
+        <section class="section is-right">
+            <div class="level-item has-image-right">
+                <figure class="image-original">
+                    <img static src="{%static path %}">
+                    <figcaption>description: {{ description }}</figcaption>
+                </figure>
+                <p> Path: {{ path }}</p>
             </div>
+        </section>
+    </div>
 
-            <div class="column is-offset-one-quarter">
-                <section class="section is-centered">
-                    <div class="level-item">
-                        <form action="getSelectedLabels" method="POST" id="labelForm" onkeyup="getEnter()">
-                            {% csrf_token %}
-                            <div class="container">
-                                <div class="field">
-                                    {% for label in labels %}
-                                        <div class="field">
-                                            <label class="checkbox">
-                                                <input type="checkbox" name="answer" id="{{ label }}"
-                                                       value="{{ label }}" class="switch">
-                                                <label for="{{ label }}">{{ label }}</label>
-                                            </label>
-                                        </div>
-
-                                    {% endfor %}
-                                </div>
-
-                                    <div class="field">
-                                        <input type="submit" class="button is-link is-centered" value="OK"
-                                               id="submitBtn">
-                                    </div>
-                                    <div class="field">
-
-                                    <input type="submit" class="button is-link is-centered" value="no tool visible"
-                                           formaction="noTools">
-                                    <input type="submit" class="button is-link is-centered" value="I don't know"
-                                           formaction="dontKnow">
-                                    <input type="submit" class="button is-link is-centered" value="Go back"
-                                           formaction="goToPreviousImage">
-                                    <input type="submit" class="button is-link is-centered" value="Overview"
-                                           formaction="goToOverview">
-                                    </div>
-
-
+    <div class="column is-offset-1">
+        <section class="section is-centered">
+            <div class="level-item">
+                <form action="getSelectedLabels" method="POST" id="labelForm" onkeyup="getEnter()">
+                    {% csrf_token %}
+                    <div class="container">
+                        <div class="field">
+                            {% for label in labels %}
+                            <div class="field">
+                                <label class="checkbox">
+                                    <input type="checkbox" name="answer" id="{{ label }}"
+                                           value="{{ label }}" class="switch">
+                                    <label for="{{ label }}">{{ label }}</label>
+                                </label>
                             </div>
-                        </form>
+
+                            {% endfor %}
+                        </div>
+
+                        <div class="field">
+                            <input type="submit" class="button is-success is-centered" value="Submit"
+                                   id="submitBtn">
+                        </div>
+                        <div class="field">
+                            <input type="submit" class="button is-link is-centered" value="No tool visible"
+                                   formaction="noTools">
+                            <input type="submit" class="button is-link is-centered" value="I don't know"
+                                   formaction="dontKnow">
+                        </div>
+                        <div class="field">
+                            <input type="submit" class="button is-link is-centered" value="Go back"
+                                   formaction="goToPreviousImage">
+                            <input type="submit" class="button is-link is-centered" value="Overview"
+                                   formaction="goToOverview">
+                        </div>
+
 
                     </div>
-                           Please select the tool that you can see in the picture <br>
-                            and confirm your selection by clicking the Submit button
+                </form>
 
-                </section>
             </div>
-        </div>
+            Please select the tool that you can see in the picture <br>
+            and confirm your selection by clicking the Submit button
 
-    {% else %}
-        <div class="columns">
-            <div class="column is-two-fifths"></div>
-            <div class="column">
-                <p> You're not logged in! </p>
-                <a href="{% url 'login' %}">Go to login</a>
-            </div>
-        </div>
+        </section>
+    </div>
+</div>
+
+{% else %}
+<div class="columns">
+    <div class="column is-two-fifths"></div>
+    <div class="column">
+        <p> You're not logged in! </p>
+        <a href="{% url 'login' %}">Go to login</a>
+    </div>
+</div>
 
 
-    {% endif %}
+{% endif %}
 {% endblock %}
 
 

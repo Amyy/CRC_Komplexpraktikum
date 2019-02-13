@@ -1,37 +1,43 @@
 {% extends 'proto/base.html' %}
 {% block title %} Login {% endblock %}
 {% block content %}
-        <body onload="showLoginError()">
+<body onload="showLoginError()">
 
 
-    <section class="section">
-        <div class="columns is-centered">
-            <div class=" column is-half">
-                <div class="column">
-                    <p class="help is-danger" id="loginError"></p>
-                    <div class="field is-centered">
-                        <form action="checkLogin" method="POST">
-                            {% csrf_token %}
+<section class="section">
+    <div class="columns is-centered">
+        <div class=" column is-half">
+            <div class="column">
+                <p class="help is-danger" id="loginError"></p>
+                <div class="field is-centered">
+                    <form action="checkLogin" method="POST">
+                        {% csrf_token %}
 
-                            <div class="field is-centered">
-                                <p class="control has-icons-left">
-                                    <input class="input" id="username" name="username" type="text"
-                                           placeholder="username">
-                                </p>
-                            </div>
+                        <div class="field is-centered">
+                            <p class="control has-icons-left">
+                                <input class="input" id="username" name="username" type="text"
+                                       placeholder="username">
+                                <span class="icon is-small is-left">
+                                                <i class="fas fa-user"></i>
+                                            </span>
 
-                            <div class="field">
-                                <p class="control has-icons-left">
-                                    <input class="input" id="password" name="password" type="password"
-                                           placeholder="password">
+                            </p>
+                        </div>
 
-                                </p>
-                            </div>
-                            <input type="submit" class="button is-link is-centered" value="OK">
-                        </form>
-                    </div>
+                        <div class="field">
+                            <p class="control has-icons-left">
+                                <input class="input" id="password" name="password" type="password"
+                                       placeholder="password">
+                                <span class="icon is-small is-left">
+                                                        <i class="fas fa-lock"></i>
+                                                    </span>
+                            </p>
+                        </div>
+                        <input type="submit" class="button is-link is-centered" value="OK">
+                    </form>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 {% endblock %}

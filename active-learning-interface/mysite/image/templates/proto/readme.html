@@ -2,31 +2,73 @@
 {% block title %} Readme {% endblock %}
 {% block content %}
 <div class="columns">
-            <div class="column">
+    <div class="column">
 
-                <section class="section is-centered">
-                    <div class="field has-text-centered">
-                                <a href="{% url 'main' %}">Go back</a>
-                            </div>
-                    This Website has the purpose to help with training a neuronal network on classifying
-                    images of Operations. These pictures show moments of an operation. The network is
-                    unsure about the shown pictures, so by labelling pictures, results of labeling new
-                    images will improve. It does not matter, if you can only label one picture, a
-                    handful or more pictures. <br>
-                    To get access to the Website, please contact: <br>
-                    <br>
-                    Example pictures of the tools that can be selected:
-                    <ul>
-                        <li>Grasper</li>
-                        <li>Bipolar</li>
-                        <li>Hook</li>
-                        <li>Scissors</li>
-                        <li>Clipper</li>
-                        <li>Irrigator</li>
-                        <li>Specimen Bag</li>
-                    </ul>
-                </section>
+        <section class="section is-centered">
+            <div class="field has-text-centered">
+                <a href="{% url 'main' %}">Go back</a>
             </div>
+            This Website has the purpose to help training a Neural Network and help it improve its accuracy. The network
+            is
+            not sure about the type of instruments that occur in the operation, so by labelling pictures the Network
+            will imporove the results when labeling new images. Your task is to detect (label) the
+            instruments on the given pictures. Some example pictures of the instruments that can occur in the operation
+            can be found down below. You can label as many
+            /as few images as you wish.
+            <br/>
+            <br/>
+            To get access to the Website, please contact: <br/>
+            <p> am.wagner@online.de </p>
+            <br/>
+            Example pictures of the tools that can be selected:
+            <br/>
+            <br/>
+            <ul class="ulstyle has-text-centered">
+                <li>
+                    <figure class="myimg">
+                        <img src="static/instrumentPictures/Grasper.png">
+                        <figcaption>Grasper</figcaption>
+                    </figure>
+                </li>
+                <li>
+                    <figure class="myimg">
+                        <img src="static/instrumentPictures/Bipolar.png">
+                        <figcaption>Bipolar</figcaption>
+                    </figure>
+                </li>
+                <li>
+                    <figure class="myimg">
+                        <img src="static/instrumentPictures/Hook.png">
+                        <figcaption>Hook</figcaption>
+                    </figure>
+                </li>
+                <li>
+                    <figure class="myimg">
+                        <img src="static/instrumentPictures/Scissors.png">
+                        <figcaption>Scissors</figcaption>
+                    </figure>
+                </li>
+                <li>
+                    <figure class="myimg">
+                        <img src="static/instrumentPictures/Clipper.png">
+                        <figcaption>Clipper</figcaption>
+                    </figure>
+                </li>
+                <li>
+                    <figure class="myimg">
+                        <img src="static/instrumentPictures/Irrigator.png">
+                        <figcaption>Irrigator</figcaption>
+                    </figure>
+                </li>
+                <li>
+                    <figure class="myimg">
+                        <img src="static/instrumentPictures/SpecimenBag.png">
+                        <figcaption>SpecimenBag</figcaption>
+                    </figure>
+                </li>
+            </ul>
+        </section>
+    </div>
 </div>
 
 {%  endblock %}

@@ -7,3 +7,11 @@
     margin-left: auto;
     margin-right: auto;
 }
+
+.image-original {
+        height: 270px;
+        width: 480px;
+}
+.ulstyle li {
+        margin-bottom: 50 !important;
+}

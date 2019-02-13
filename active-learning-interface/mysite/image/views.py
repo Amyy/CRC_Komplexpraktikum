@@ -1,11 +1,11 @@
 from django.shortcuts import render, redirect
 from .models import Image, Label, Userlabels
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse
 import datetime
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.hashers import check_password
-
+from django.core.exceptions import MultipleObjectsReturned
 
 
 def getImage(request):
@@ -26,14 +26,20 @@ def getPictureInformation(request, image, previous=False):
     imagelabels = Userlabels.objects.get_image_labels(image, request.user)
     labels = Label.objects.all()
     description = image.description()
+    imagepath = image.get_path()
     context = {
         'image': image,
         'labels': labels,
         'imageLabels': imagelabels,
         'description': description,
-        'previous': previous
+        'previous': previous,
+        'path': imagepath
     }
     return context
+
+
+def readme(request):
+    return render(request, 'proto/readme.html')
 
 
 def index(request):
@@ -129,6 +135,7 @@ def noIdea(request):
     next_image = getImage(request)
     return render(request, 'proto/main.html', context=getPictureInformation(request, next_image))
 
+
 def noToolVisible(request):
     # if no tool is visible, just set all the selected labels to empty
     setLabels(request, answers="")
@@ -136,12 +143,10 @@ def noToolVisible(request):
     context = getPictureInformation(request, image)
     return render(request, 'proto/main.html', context)
 
+
 def getSelectedLabels(request):
     # get the checked checkboxes
-    for answer in request.POST.getlist('answer'):
-        print(answer)
     setLabels(request, answers=request.POST.getlist('answer'))
-    # TODO: get the next picture (not only the next description) and present it to the user
     next_image = getImage(request)
     context = getPictureInformation(request, next_image)
     return render(request, 'proto/main.html', context)
@@ -158,36 +163,24 @@ def goToPreviousImage(request):
 
 
 def goToOverview(request):
-    print(" In overview ")
-    labeled_imgs =  Image.objects.get_labeled_images(request.user, 20)
+    labeled_imgs = Image.objects.get_labeled_images(request.user, 20)
     image_descriptions = []
-
     for im in labeled_imgs:
-        image_descriptions.append(im.image)
-
+        description = getPictureInformation(request, im.image)
+        image_descriptions.append(description)
     context = {
-        'images' :  image_descriptions
-    }
+        'images': image_descriptions
 
+    }
     return render(request, 'proto/overview.html', context)
 
+
 def goToImage(request):
-
-    image = request.POST.get('clickedimage')
-    img = Image.objects.get(name=image)
-    print("IMAGE IS ")
-    print(image)
-    print(img)
-    if img == None:
-        print(" it is none!")
-
-
-    context = getPictureInformation(request,img)
-
+    img = request.POST.get('image')
+    request.session['image'] = img
+    image = Image.objects.get(id=img)
+    context = getPictureInformation(request, image)
     return render(request, 'proto/main.html', context)
-
-def readme(request):
-    return render(request, 'proto/readme.html')
 
 
 def annotations(request):

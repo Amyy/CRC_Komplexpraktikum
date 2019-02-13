@@ -8,7 +8,7 @@ import pathlib
 
 FRAME_FREQ = 25
 NETWORK_USER = 'network'
-IMAGE_PATH = pathlib.Path('/frames')
+IMAGE_PATH = pathlib.Path('/local_home/bodenstse/cholec80_1fps/frames/')
 
 
 class image_manager(models.Manager):
@@ -31,12 +31,15 @@ class image_manager(models.Manager):
         if not nxt_img:
             #find unlabeled image with highest variance and lowst userlabels count
             unlabeled_images = Image.objects.exclude(userlabels__author=user)
-            nxt_img = unlabeled_images.annotate(num_ul=models.Count('userlabels'))\
+            if unlabeled_images:
+                nxt_img = unlabeled_images.annotate(num_ul=models.Count('userlabels'))\
                 .order_by('-variance', 'num_ul').first()
-            nxt_img2 = unlabeled_images.annotate(num_ul=models.Count('userlabels'))\
-                .order_by('-variance', 'num_ul')[1]
-            print('next image', nxt_img, nxt_img.variance, nxt_img.num_ul)
-            print('next image2', nxt_img2, nxt_img2.variance, nxt_img2.num_ul)
+            #nxt_img2 = unlabeled_images.annotate(num_ul=models.Count('userlabels'))\
+            #    .order_by('-variance', 'num_ul')[1]
+            #print('next image', nxt_img, nxt_img.variance, nxt_img.num_ul)
+            #print('next image2', nxt_img2, nxt_img2.variance, nxt_img2.num_ul)
+            else:
+                nxt_img = Image.objects.all().first()
         return nxt_img
 
 
@@ -248,6 +251,7 @@ class Image(models.Model):
     opset = models.IntegerField(null=True)
     op = models.IntegerField(null=True)
     number = models.IntegerField(null=True)
+    id = models.AutoField(primary_key=True)
 
     objects = image_manager()
 
@@ -256,11 +260,11 @@ class Image(models.Model):
 
     def description(self):
         descr = ''
-        descr += str(self.name)
+        descr += str(self.id)
         return descr
 
     def get_path(self):
-        path = IMAGE_PATH / Path(self.opset) / Path(self.op) / Path(self.name + '.png')
+        path = pathlib.Path(str(self.opset)) / pathlib.Path("%02d"%int(self.op)) / pathlib.Path("%08d"%int(self.name) + '.png')
         return str(path)
 
 class Label(models.Model):

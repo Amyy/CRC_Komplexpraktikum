@@ -15,7 +15,7 @@ if True:
         request.get(op[0], op[1])
 
     # run training
-    #exec(open("./pseudo_active_labeling.py").read())
+    exec(open("/mnt/g27prist/TCO/TCO-Studenten/wagnerame/CRC_Komplexpraktikum/Network/pseudo_active_labeling.py").read())
 
     # upload results
-    request.post("../../Network/variances/variances.csv")
+    request.post("variances/variances.csv")

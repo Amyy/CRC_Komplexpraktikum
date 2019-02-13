@@ -15,7 +15,7 @@
 {% extends 'proto/base.html' %}
 {% block title %} Home {% endblock %}
 {% block content %}
-
+{% load static %}
 <body>
 
 <div class="container">
@@ -28,29 +28,30 @@
 
         <div class="row columns">
             {% for image in images %}
-             <!-- <div>{{image}}</div> -->
+            <div>{{image.image}}</div>
+            <div> {{image.path}}</div>
             <div class="column is-one-third">
                 <div class="card large">
                     <div class="card-image">
-                        <figure >
-                             <img src="{{image.data.url}}" class="imagee" alt="Image" style="display: block; margin: 0 auto;width:352x; height:334px; margin-bottom: 5px">
+                        <figure>
+                            <img static src="{%static image.path%}" class="imagee" alt="Image"
+                                 style="display: block; margin: 0 auto; height:270px; margin-bottom: 5px">
                         </figure>
                         <form action="goToImage" class="edit" method="POST">
                             {% csrf_token %}
-                            <!-- for testing: checkbox instead of hidden -->
-                            <input type="hidden" class="imagee" value="{{ image }}" >
-                            <input type="submit" value="Edit image"  style="display: block; margin: 0 auto;">
+                            <input type="hidden" class="imagee" value={{image.description}}>
+                            <input type="submit" value="Edit image" style="display: block; margin: 0 auto;">
                         </form>
                     </div>
 
                 </div>
             </div>
-             {% if forloop.counter|divisibleby:3 %}
+            {% if forloop.counter|divisibleby:3 %}
         </div>
 
-         <div class="row columns">
-              {% endif %}
-             {% endfor %}
+        <div class="row columns">
+            {% endif %}
+            {% endfor %}
         </div>
 
 
@@ -78,11 +79,12 @@
 
               $(".edit").click(function (e) {
                 var element = $(this).find(".imagee");
-                element.attr('name', 'clickedimage');
+                element.attr('name', 'image');
               });
 
 
 });
+
 
 
 </script>

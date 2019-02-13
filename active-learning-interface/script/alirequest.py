@@ -1,5 +1,7 @@
 import requests
 import sys
+from pathlib import Path
+import os
 
 class req:
     def post(self, path):
@@ -11,13 +13,14 @@ class req:
         """
 
         ### url, an die csv hochgeladen wird
-        url = 'http://localhost:8000/image/upload'
+        url = 'http://10.2.89.30:8000/upload'
 
         ### 'file.cs' Pfad zur Datei, die hochgeladen wird
         files = {'file': open(path, 'rb')}
 
         ### login with username 'network'
-        url_login='http://localhost:8000/admin/login/'
+        os.environ['NO_PROXY'] = '10.2.89.30'
+        url_login='http://10.2.89.30:8000/'#admin/login/'
         user='network'
         password='upload88'
         client = requests.session()
@@ -31,7 +34,7 @@ class req:
         #send files
         r = client.post(url, files=files, data=payload)
 
-        #print(r.text)
+        print(r)
 
 
     def get(self, opset, op):
@@ -44,10 +47,13 @@ class req:
         """
 
         ### url, an die csv hochgeladen wird
-        url = 'http://localhost:8000/image/csv/' + str(opset) + '/' + str(op) + '/'
+        url = 'http://10.2.89.30:8000/csv/' + str(opset) + '/' + str(op) + '/'
 
         ### 'file.cs' Pfad zur Datei, die hochgeladen wird
-        file = open('labels-' + str(opset) + '-' + str(op) + '.csv', 'wb')
+        os.environ['NO_PROXY'] = '10.2.89.30'
+        path = Path('/mnt/g27prist/TCO/TCO-Studenten/wagnerame/CRC_Komplexpraktikum/Annotations') / str(opset) / str(op)
+        path.mkdir(exist_ok=True, parents=True)
+        file = open(str(path / 'Ins.csv'), 'wb')
 
         r = requests.get(url, allow_redirects=True)
         print(r)

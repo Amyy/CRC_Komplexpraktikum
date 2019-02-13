@@ -10,6 +10,7 @@
     <link static href="{% static 'css/bulma-0.7.2/css/bulma-switch.min.css' %}" rel="stylesheet">
     <link static href="{% static 'css/myStyle.css' %}" rel="stylesheet">
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
 
 </head>
 <body>
@@ -18,31 +19,25 @@
     <div class="hero-body">
         <div class="container has-text-centered">
             <h1 class="title">
-                CRC GUI Prototype
+                Image Labeling
             </h1>
         </div>
         {% if request.path != "/image/" and request.path != "/image/logout_view" and user.is_authenticated %}
             <section class="is-pulled-left">
                 <a href="showChangePassword" class="icon-block">
-                    <figure class="image is-48x48" title="change password">
-                            <img src="{% static 'icons/fa-cog.png' %}">
-
-                        </figure>
+                    <i class="fas fa-cog fa-2x" title="change password"></i>
                 </a>
             </section>
             <section class="is-pulled-right">
                 <a href="{% url 'logout_view' %}" class="icon-block">
-                    <figure class="image is-48x48">
-                            <img src="{% static 'icons/sign-out.png' %}" title="logout">
-
-                        </figure>
+                    <i class="fas fa-sign-out-alt fa-3x" title="logout"></i>
                 </a>
             </section>
         {% endif %}
-            <div class="container has-icon">
+        <div class="container has-icon">
                 <a href="readme" class="icon-block">
                     <figure class="image is-48x48">
-                        <img src="{% static 'icons/question.png' %}" title="help">
+                        <img class="fas fa-question fa-2x" title="help">
                     </figure>
                 </a>
             </div>
