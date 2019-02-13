@@ -1,5 +1,0 @@
-# start sreencasting, quit with Q
-ffmpeg -f x11grab -r 25 -s 1920x1080 -i :0.0 -c:v huffyuv screencast.mkv
-
-# downsample video to 960x540 -> output.mkv
-ffmpeg -i screencast_okay_no_tool_visible.mkv -filter:v scale=960:-1 -c:a copy output.mkv
