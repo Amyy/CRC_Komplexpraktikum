@@ -22,7 +22,7 @@ class req:
         os.environ['NO_PROXY'] = '10.2.89.30'
         url_login='http://10.2.89.30:8000/'#admin/login/'
         user='network'
-        password='upload88'
+        password= 'kp_crc2019'
         client = requests.session()
         client.get(url_login)
         csrftoken = client.cookies['csrftoken']
