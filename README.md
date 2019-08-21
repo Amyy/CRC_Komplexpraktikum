@@ -16,4 +16,5 @@ Eventuell muss man folgende Änderungen vornehmen:
 	Network/pseudo_active_labeling.py sys.insert()
 	active-learning-interface/script/alirequest.py path in get(opset,op) function
 	active-learning-interface/script/continuous.py path to pseudo_active_labeling.py
-
+	
+Für weitere Infos bitte die Dokumentation anschauen.
