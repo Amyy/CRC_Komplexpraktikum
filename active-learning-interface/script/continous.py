@@ -5,6 +5,7 @@ request = req()
 opsets= ["1"]
 ops = ["2"]
 
+
 op_data = [(1, 1), (1, 2), (2, 1), (2, 2)]
 
 if True:
@@ -15,7 +16,7 @@ if True:
         request.get(op[0], op[1])
 
     # run training
-    exec(open("/mnt/g27prist/TCO/TCO-Studenten/wagnerame/CRC_Komplexpraktikum/Network/pseudo_active_labeling.py").read())
+    exec(open("/home/titizovlj/Desktop/KP/KP_Final_Version/CRC_Komplexpraktikum/Network/pseudo_active_labeling.py").read())
 
     # upload results
-    request.post("variances/variances.csv")
+    request.post("variances/variances2.csv")

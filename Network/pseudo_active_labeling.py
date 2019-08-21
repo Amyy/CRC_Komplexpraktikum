@@ -54,6 +54,9 @@ import datetime
 import numpy as np
 from shutil import copy2
 
+#sys.path.insert(0, '/mnt/g27prist/TCO/TCO-Studenten/wagnerame/CRC_Komplexpraktikum/Network')
+sys.path.insert(0, '/home/titizovlj/Desktop/KP/KP_Final_Version/CRC_Komplexpraktikum/Network')
+
 import datasets
 import networks
 import losses
@@ -86,6 +89,8 @@ width = 384
 height = 216
 num_classes = 7
 
+
+
 labeled_opsets = []
 labeled_ops = ["4/07"]
 
@@ -101,7 +106,7 @@ test_ops = ["4/07"]
 opts = []
 try:
     opts, args = getopt.getopt(sys.argv[1:], "hdt:i:o:")
-except getopt.GetoptError:
+except getopt.GetoptError :
     print("pseudo_active_labeling.py [OPTIONS] \n\n"
           "OPTIONS: \n"
           "-d activates debug output \n"

@@ -20,7 +20,10 @@ from pathlib import Path
 data_path = '/local_home/bodenstse/cholec80_1fps/frames/'
 data_pathlib = Path(data_path)
 
-csv_path = "/mnt/g27prist/TCO/TCO-Studenten/wagnerame/CRC_Komplexpraktikum/Annotations/"
+
+
+csv_path =  "/home/titizovlj/Desktop/KP/KP_Final_Version/CRC_Komplexpraktikum/Annotations/"
+
 
 class InstrumentDataset(data.Dataset):
     """InstrumentDataset
@@ -54,8 +57,11 @@ class InstrumentDataset(data.Dataset):
         if ops is not None:
             self.load_ops(ops)
 
+
         if opsets is not None:
             self.load_opsets(opsets)
+
+
 
     def _load_image(self,path):
         """Loads and resizes an image
@@ -111,28 +117,27 @@ class InstrumentDataset(data.Dataset):
         :param ops: list of OPs
 
         """
-        zero_label = np.zeros(7, dtype=np.float32)
+        zero_label = np.zeros(12, dtype=np.float32)
+
         for op in ops:
             print("loading op", op, "labeled:", self.labeled)
+            print(csv_path + op + "/Ins2.csv")
             #with open(csv_path + op + "/Ins.csv", "r") as f:
             try:
-                f = open(csv_path + op + "/Ins.csv", "r")
+                f = open(csv_path + op + "/Ins2.csv", "r")
                 
             except FileNotFoundError:
                 # no csv exists
                 if not self.labeled:
-
                     # add all images of dataset, remove already labeled ones
                     images_paths = [x for x in Path(data_path + op).glob("*") if (x not in Path(data_path + op).glob("*.csv"))]
-                    print('images_paths',images_paths)
-                    quit()
+                    #print('images_paths',images_paths)
 
                     for path in images_paths:
                         self.add_sample(str(path), zero_label)
 
             else:
                 # csv exists
-
                 reader = csv.reader(f, delimiter=',')
                 labels = []
                 labeled_img_paths = []

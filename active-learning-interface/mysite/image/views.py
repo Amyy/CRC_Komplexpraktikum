@@ -47,6 +47,7 @@ def index(request):
         return render(request, 'proto/login.html')
     next_image = getImage(request)
     context = getPictureInformation(request, next_image)
+    anzahl = len(list(Image.objects.all()))
     try:
         message = context.get('message')
         if message == 'noPics':
@@ -146,7 +147,10 @@ def noToolVisible(request):
 
 def getSelectedLabels(request):
     # get the checked checkboxes
+    for answer in request.POST.getlist('answer'):
+        print(answer)
     setLabels(request, answers=request.POST.getlist('answer'))
+    # TODO: get the next picture (not only the next description) and present it to the user
     next_image = getImage(request)
     context = getPictureInformation(request, next_image)
     return render(request, 'proto/main.html', context)
@@ -212,3 +216,5 @@ def handle_uploaded_file(f):
         for chunk in f.chunks():
             destination.write(chunk)
     return path
+
+

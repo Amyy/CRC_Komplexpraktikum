@@ -129,10 +129,17 @@ class userlabels_mangager(models.Manager):
         spamwriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
         network_user = User.objects.get(username=NETWORK_USER)
         #filter images by opset and op
+
+        #od GUI gi zema so nivnite labels
         images = Image.objects.filter(opset=opset, op=op).order_by('number')
+        print("images is ")
+        print(images)
         #ul_op = self.filter(image__opset = opset, image__op = op)
         #ul_group_label_dict = dict((d['image__name'], dict(d, index=index)) for (index, d) in enumerate(ul_group_label))
         labels = Label.objects.all()
+
+        print("labels are ")
+        print(labels)
 
         #iterate through images
         for image in images:
@@ -180,6 +187,7 @@ class userlabels_mangager(models.Manager):
                 #write to csv file
                 spamwriter.writerow([int(name) * FRAME_FREQ] + write_labels)
 
+
     def read_annotations(self, path):
         with open(path, 'r') as csvfile:
             csvreader = csv.reader(csvfile, delimiter=',', quotechar='|')
@@ -191,11 +199,11 @@ class userlabels_mangager(models.Manager):
                 labels = []
                 path = row[0]
                 #convert labels
-                for i in range(0,7):
+                for i in range(0,13):
                     if int(row[i+1]):
                         labels.append(label_classes[i])
                 #convert variance
-                variance = float(row[8])
+                variance = float(row[14])
                 opset, op, number = convert_path(path)
                 image, create = Image.objects.get_or_create(opset=opset, op=op, name=number)
                 images.append(image)
@@ -248,8 +256,10 @@ class Image(models.Model):
     name = models.CharField(max_length=200)
     variance = models.FloatField(null=True)
     data = models.ImageField(null=True, default='default.jpg')
-    opset = models.IntegerField(null=True)
-    op = models.IntegerField(null=True)
+    #opset = models.IntegerField(null=True)
+    #op = models.IntegerField(null=True)
+    opset = models.CharField(max_length=200)
+    op = models.CharField(max_length=200)
     number = models.IntegerField(null=True)
     id = models.AutoField(primary_key=True)
 
